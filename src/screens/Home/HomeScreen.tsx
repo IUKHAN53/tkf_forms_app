@@ -36,7 +36,7 @@ export const HomeScreen: React.FC<HomeProps> = ({ navigation }) => {
 
   if (isLoading && !data) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-950">
+      <View style={{ flex: 1, backgroundColor: colors.bg }} className="items-center justify-center">
         <ActivityIndicator />
       </View>
     );
@@ -68,13 +68,19 @@ export const HomeScreen: React.FC<HomeProps> = ({ navigation }) => {
       </View>
 
       {syncStatus === 'syncing' ? (
-        <View className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: '#0f172a', borderColor: '#1e3a8a', borderWidth: 1 }}>
-          <Text style={{ color: '#c7d2fe' }}>Syncing offline submissions...</Text>
+        <View
+          className="mb-4 rounded-xl px-4 py-3"
+          style={{ backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }}
+        >
+          <Text style={{ color: colors.text }}>Syncing offline submissions...</Text>
         </View>
       ) : null}
       {syncStatus === 'error' ? (
-        <View className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: '#7f1d1d', borderColor: '#991b1b', borderWidth: 1 }}>
-          <Text style={{ color: '#fecdd3' }}>Sync paused after an error. Will retry.</Text>
+        <View
+          className="mb-4 rounded-xl px-4 py-3"
+          style={{ backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }}
+        >
+          <Text style={{ color: colors.text }}>Sync paused after an error. Will retry.</Text>
         </View>
       ) : null}
 

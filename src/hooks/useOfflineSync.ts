@@ -14,6 +14,7 @@ export function useOfflineSync(isAuthenticated: boolean) {
     if (!isAuthenticated || syncing.current || queue.length === 0) return;
     syncing.current = true;
     setSyncStatus('syncing');
+    let hadError = false;
     try {
       for (const item of queue) {
         try {
@@ -26,14 +27,17 @@ export function useOfflineSync(isAuthenticated: boolean) {
         } catch (err) {
           // stop processing on first failure to retry later
           setSyncStatus('error');
+          hadError = true;
           break;
         }
       }
-      setSyncStatus('idle');
+      if (!hadError) {
+        setSyncStatus('idle');
+      }
     } finally {
       syncing.current = false;
     }
-  }, [isAuthenticated, queue, removeFromQueue]);
+  }, [isAuthenticated, queue, removeFromQueue, setLastSync, setSyncStatus]);
 
   useEffect(() => {
     sync();
