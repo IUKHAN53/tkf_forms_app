@@ -1,0 +1,30 @@
+import { Stack } from 'expo-router';
+import { useThemeColors } from '../../src/store/themeStore';
+
+export default function AppLayout() {
+  const { colors } = useThemeColors();
+
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.bg },
+        headerTintColor: colors.text,
+        headerTitleStyle: { color: colors.text },
+        headerShadowVisible: false,
+      }}
+    >
+      {/* Tab Navigator */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      
+      {/* Core Form Screens (pushed from tabs) */}
+      <Stack.Screen name="core-forms/area-mapping" options={{ title: 'Area Mapping' }} />
+      <Stack.Screen name="core-forms/draft-list" options={{ title: 'Draft List' }} />
+      <Stack.Screen name="core-forms/religious-leaders" options={{ title: 'Religious Leaders Activity' }} />
+      <Stack.Screen name="core-forms/community-barriers" options={{ title: 'Community Barrier Activity' }} />
+      <Stack.Screen name="core-forms/healthcare-barriers" options={{ title: 'Healthcare Barrier Activity' }} />
+      
+      {/* Dynamic Form Details */}
+      <Stack.Screen name="forms/[id]" options={{ title: 'Form' }} />
+    </Stack>
+  );
+}

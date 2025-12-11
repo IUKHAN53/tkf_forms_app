@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, StyleSheet } from 'react-native';
+import { useThemeColors } from '../../../store/themeStore';
 
 interface Props {
   value?: string | number;
@@ -10,13 +11,32 @@ interface Props {
 }
 
 export const NumberField: React.FC<Props> = ({ value, onChange }) => {
+  const { colors } = useThemeColors();
+
   return (
     <TextInput
-      className="bg-slate-900 text-white px-3 py-2 rounded-lg border border-slate-800"
+      style={[
+        styles.input,
+        {
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          color: colors.text,
+        },
+      ]}
       value={value?.toString()}
       onChangeText={onChange}
       keyboardType="numeric"
-      placeholderTextColor="#94a3b8"
+      placeholderTextColor={colors.muted}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    fontSize: 15,
+  },
+});

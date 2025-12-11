@@ -1,6 +1,6 @@
 {
   "name": "tkf_forms_app",
-  "main": "./App.tsx",
+  "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
@@ -22,12 +22,15 @@
     "@tanstack/react-query": "^5.90.12",
     "axios": "^1.13.2",
     "expo": "~54.0.27",
+    "expo-application": "~7.0.8",
     "expo-constants": "~18.0.11",
     "expo-font": "~14.0.10",
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
     "expo-image-picker": "~17.0.9",
+    "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.10",
+    "expo-location": "~19.0.8",
     "expo-router": "~6.0.17",
     "expo-splash-screen": "~31.0.12",
     "expo-sqlite": "~16.0.10",

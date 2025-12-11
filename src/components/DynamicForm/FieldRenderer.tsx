@@ -1,6 +1,6 @@
 import React from 'react';
 import { Controller, Control } from 'react-hook-form';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { FormField } from '../../api/forms';
 import { TextField } from './fields/TextField';
 import { NumberField } from './fields/NumberField';
@@ -8,6 +8,7 @@ import { SelectField } from './fields/SelectField';
 import { FileField } from './fields/FileField';
 import { CheckboxField } from './fields/CheckboxField';
 import { DateField } from './fields/DateField';
+import { useThemeColors } from '../../store/themeStore';
 
 interface Props {
   control: Control<any>;
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export const FieldRenderer: React.FC<Props> = ({ control, field }) => {
+  const { colors } = useThemeColors();
+
   const renderControlledField = (value: any, onChange: (val: any) => void) => {
     switch (field.type) {
       case 'number':
@@ -24,6 +27,8 @@ export const FieldRenderer: React.FC<Props> = ({ control, field }) => {
       case 'image':
       case 'signature':
         return <FileField value={value} onChange={onChange} label={field.label} name={field.name} mode={field.type} />;
+      case 'textarea':
+        return <TextField value={value} onChange={onChange} label={field.label} name={field.name} required={field.required} multiline />;
       default:
         return <TextField value={value} onChange={onChange} label={field.label} name={field.name} required={field.required} />;
     }
@@ -32,8 +37,11 @@ export const FieldRenderer: React.FC<Props> = ({ control, field }) => {
   const isSelfControlled = ['select', 'radio', 'checkbox'].includes(field.type);
 
   return (
-    <View className="mb-4">
-      <Text className="text-base font-semibold mb-1 text-white">{field.label}</Text>
+    <View style={styles.container}>
+      <Text style={[styles.label, { color: colors.text }]}>
+        {field.label}
+        {field.required && <Text style={{ color: colors.error || '#ef4444' }}> *</Text>}
+      </Text>
       {isSelfControlled ? (
         field.type === 'checkbox' ? (
           <CheckboxField control={control} name={field.name} label={field.label} />
@@ -54,7 +62,11 @@ export const FieldRenderer: React.FC<Props> = ({ control, field }) => {
           render={({ field: rhfField, fieldState }) => (
             <View>
               {renderControlledField(rhfField.value, rhfField.onChange)}
-              {fieldState.error && <Text className="text-red-500 text-sm mt-1">{fieldState.error.message}</Text>}
+              {fieldState.error && (
+                <Text style={[styles.error, { color: colors.error || '#ef4444' }]}>
+                  {fieldState.error.message}
+                </Text>
+              )}
             </View>
           )}
         />
@@ -62,3 +74,18 @@ export const FieldRenderer: React.FC<Props> = ({ control, field }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 4,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  error: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+});

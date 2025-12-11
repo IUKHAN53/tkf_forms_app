@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextInput } from 'react-native';
+import { TextInput, StyleSheet } from 'react-native';
+import { useThemeColors } from '../../../store/themeStore';
 
 interface Props {
   value?: string;
@@ -7,15 +8,45 @@ interface Props {
   label: string;
   name: string;
   required?: boolean;
+  multiline?: boolean;
+  placeholder?: string;
 }
 
-export const TextField: React.FC<Props> = ({ value, onChange }) => {
+export const TextField: React.FC<Props> = ({ value, onChange, placeholder, multiline }) => {
+  const { colors } = useThemeColors();
+
   return (
     <TextInput
-      className="bg-slate-900 text-white px-3 py-2 rounded-lg border border-slate-800"
+      style={[
+        styles.input,
+        {
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          color: colors.text,
+        },
+        multiline && styles.multiline,
+      ]}
       value={value}
       onChangeText={onChange}
-      placeholderTextColor="#94a3b8"
+      placeholder={placeholder}
+      placeholderTextColor={colors.muted}
+      multiline={multiline}
+      numberOfLines={multiline ? 4 : 1}
+      textAlignVertical={multiline ? 'top' : 'center'}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    fontSize: 15,
+  },
+  multiline: {
+    minHeight: 100,
+    paddingTop: 12,
+  },
+});

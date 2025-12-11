@@ -30,12 +30,12 @@ export type SubmissionInput = {
 
 export async function fetchForms(): Promise<Form[]> {
   const res = await api.get<{ data: Form[] }>('/forms');
-  return res.data.data;
+  return res.data?.data ?? [];
 }
 
 export async function fetchForm(id: number): Promise<Form> {
   const res = await api.get<{ data: Form }>(`/forms/${id}`);
-  return res.data.data;
+  return res.data?.data;
 }
 
 export async function submitForm(formId: number, payload: SubmissionInput): Promise<void> {

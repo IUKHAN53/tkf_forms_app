@@ -6,10 +6,11 @@ export type LoginResponse = {
     id: number;
     name: string;
     email: string;
+    phone?: string;
   };
 };
 
-export async function login(email: string, password: string): Promise<LoginResponse> {
-  const res = await api.post<LoginResponse>('/login', { email, password });
+export async function login(phone: string, password: string): Promise<LoginResponse> {
+  const res = await api.post<LoginResponse>('/login', { phone, password });
   return res.data;
 }
