@@ -16,11 +16,11 @@ import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
 import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
-import { ParticipantList } from '../../../src/components/ParticipantList';
+import { HealthcareParticipantList } from '../../../src/components/HealthcareParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
 import { healthcareBarrierApi, HealthcareBarrier, Participant, generateFormId } from '../../../src/api/coreForms';
 
-const GROUP_TYPES = ['Healthcare Workers', 'Doctors', 'Nurses', 'Lady Health Workers', 'Vaccinators', 'Other'];
+const GROUP_TYPES = ['Medics', 'Non-Medics', 'Both'];
 
 export default function HealthcareBarriersScreen() {
   const router = useRouter();
@@ -48,7 +48,7 @@ export default function HealthcareBarriersScreen() {
   }, []);
 
   const [formData, setFormData] = useState<HealthcareBarrier>({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString(),
     hfs: '',
     address: '',
     uc: '',
@@ -118,7 +118,7 @@ export default function HealthcareBarriersScreen() {
         submitted_at: new Date().toISOString(),
       };
       await healthcareBarrierApi.create(submitData);
-      Alert.alert('Success', 'Healthcare barrier activity saved successfully', [
+      Alert.alert('Success', 'Healthcare Workers Explore Immunization Barriers activity saved successfully', [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error: any) {
@@ -134,20 +134,21 @@ export default function HealthcareBarriersScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
-        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Healthcare Barriers Form" />
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Healthcare Workers Explore Immunization Barriers" />
 
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>🏥 Healthcare Barrier Activity</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>🏥 Healthcare Workers Explore Immunization Barriers</Text>
           <Text style={[styles.headerDesc, { color: colors.muted }]}>
-            Document healthcare facility barrier analysis activities
+            Document healthcare workers immunization barrier analysis activities
           </Text>
         </View>
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Session Details</Text>
 
-        <Text style={[styles.label, { color: colors.text }]}>Date *</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Date & Time *</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+          editable={false}
           placeholder="YYYY-MM-DD"
           placeholderTextColor={colors.muted}
           value={formData.date}
@@ -252,7 +253,7 @@ export default function HealthcareBarriersScreen() {
           </Text>
         )}
 
-        <ParticipantList
+        <HealthcareParticipantList
           participants={formData.participants}
           onChange={handleParticipantsChange}
         />

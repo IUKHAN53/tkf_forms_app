@@ -17,6 +17,7 @@ import { useLocation } from '../../../src/hooks/useLocation';
 import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { PhoneInput } from '../../../src/components/PhoneInput';
 import { areaMappingApi, AreaMapping, generateFormId } from '../../../src/api/coreForms';
 
 export default function AreaMappingScreen() {
@@ -166,11 +167,9 @@ export default function AreaMappingScreen() {
         />
 
         <Text style={[styles.label, { color: colors.text }]}>AIC Contact</Text>
-        <TextInput
+        <PhoneInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Enter AIC contact number"
           placeholderTextColor={colors.muted}
-          keyboardType="phone-pad"
           value={formData.aic_contact || ''}
           onChangeText={(v) => updateField('aic_contact', v)}
         />
@@ -185,11 +184,9 @@ export default function AreaMappingScreen() {
         />
 
         <Text style={[styles.label, { color: colors.text }]}>CM Contact</Text>
-        <TextInput
+        <PhoneInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Enter CM contact number"
           placeholderTextColor={colors.muted}
-          keyboardType="phone-pad"
           value={formData.cm_contact || ''}
           onChangeText={(v) => updateField('cm_contact', v)}
         />
@@ -304,15 +301,6 @@ export default function AreaMappingScreen() {
           placeholderTextColor={colors.muted}
           value={formData.major_languages || ''}
           onChangeText={(v) => updateField('major_languages', v)}
-        />
-
-        <Text style={[styles.label, { color: colors.text }]}>Existing Committees</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="List existing committees"
-          placeholderTextColor={colors.muted}
-          value={formData.existing_committees || ''}
-          onChangeText={(v) => updateField('existing_committees', v)}
         />
 
         <Text style={[styles.label, { color: colors.text }]}>Nearest PHF</Text>

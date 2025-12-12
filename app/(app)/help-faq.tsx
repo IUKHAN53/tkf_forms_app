@@ -38,7 +38,7 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     question: 'Why is my GPS location not working?',
-    answer: 'Ensure location permissions are enabled for the app. Go to your device settings > Apps > Community Lead Engagement > Permissions > Location and enable it.',
+    answer: 'Ensure location permissions are enabled for the app. Go to your device settings > Apps > Community Led Engagement > Permissions > Location and enable it.',
   },
   {
     question: 'How do I switch between light and dark mode?',

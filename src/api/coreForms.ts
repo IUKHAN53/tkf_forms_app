@@ -49,7 +49,6 @@ export interface AreaMapping extends FormMetadata {
   total_girls_under_2?: number;
   major_ethnicity?: string;
   major_languages?: string;
-  existing_committees?: string;
   nearest_phf?: string;
   hf_incharge_name?: string;
   latitude?: number;
@@ -62,43 +61,7 @@ export const areaMappingApi = {
     return data;
   },
   create: async (payload: AreaMapping) => {
-    const { data } = await api.post('/area-mappings', payload);
-    return data;
-  },
-};
-
-// Draft List
-export interface DraftList extends FormMetadata {
-  id?: number;
-  division: string;
-  district: string;
-  town: string;
-  uc: string;
-  outreach: string;
-  child_name: string;
-  father_name: string;
-  gender: string;
-  date_of_birth: string;
-  age_in_months: number;
-  father_cnic?: string;
-  house_number?: string;
-  address: string;
-  guardian_phone?: string;
-  type: string;
-  missed_vaccines: string[];
-  reasons_of_missing: string;
-  plan_for_coverage: string;
-  latitude?: number;
-  longitude?: number;
-}
-
-export const draftListApi = {
-  list: async () => {
-    const { data } = await api.get('/draft-lists');
-    return data;
-  },
-  create: async (payload: DraftList) => {
-    const { data } = await api.post('/draft-lists', payload);
+    const { data} = await api.post('/area-mappings', payload);
     return data;
   },
 };
@@ -108,6 +71,7 @@ export interface Participant {
   sr_no?: number;
   name: string;
   title_designation?: string;
+  designation?: string;
   occupation?: string;
   address?: string;
   contact_no?: string;
@@ -150,8 +114,8 @@ export interface CommunityBarrier extends FormMetadata {
   district: string;
   fix_site: string;
   outreach: string;
-  community: string;
-  group_type: string;
+  community: string[];
+  group_type: string[];
   participants_males: number;
   participants_females: number;
   facilitator_tkf: string;

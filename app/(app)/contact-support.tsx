@@ -46,7 +46,7 @@ export default function ContactSupportScreen() {
   const router = useRouter();
 
   const handleEmail = () => {
-    Linking.openURL('mailto:iu.khan53@gmail.com?subject=Community Lead Engagement Support').catch(() => {
+    Linking.openURL('mailto:iu.khan53@gmail.com?subject=Community Led Engagement Support').catch(() => {
       Alert.alert('Error', 'Unable to open email client');
     });
   };

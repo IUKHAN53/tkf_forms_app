@@ -20,7 +20,8 @@ import { ParticipantList } from '../../../src/components/ParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
 import { communityBarrierApi, CommunityBarrier, Participant, generateFormId } from '../../../src/api/coreForms';
 
-const GROUP_TYPES = ['Community Leaders', 'Women Groups', 'Youth Groups', 'Elders', 'Mixed Community', 'Other'];
+const GROUP_TYPES = ['Teachers', 'Shopkeepers', 'Religious Leaders', 'Political Leaders', 'Mother in Laws', 'Mothers', 'Fathers', 'Father in Laws'];
+const COMMUNITIES = ['Pathan', 'Punjabi', 'Sindhi', 'Saraiki', 'Urdu speaking'];
 
 export default function CommunityBarriersScreen() {
   const router = useRouter();
@@ -48,14 +49,14 @@ export default function CommunityBarriersScreen() {
   }, []);
 
   const [formData, setFormData] = useState<CommunityBarrier>({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString(),
     venue: '',
     uc: '',
     district: '',
     fix_site: '',
     outreach: '',
-    community: '',
-    group_type: '',
+    community: [],
+    group_type: [],
     participants_males: 0,
     participants_females: 0,
     facilitator_tkf: '',
@@ -121,7 +122,7 @@ export default function CommunityBarriersScreen() {
         submitted_at: new Date().toISOString(),
       };
       await communityBarrierApi.create(submitData);
-      Alert.alert('Success', 'Community barrier activity saved successfully', [
+      Alert.alert('Success', 'Community Explore Immunization Barriers activity saved successfully', [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error: any) {
@@ -137,10 +138,10 @@ export default function CommunityBarriersScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
-        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Community Barriers Form" />
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Community Explore Immunization Barriers" />
 
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>👥 Community Barrier Activity</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>👥 Community Explore Immunization Barriers</Text>
           <Text style={[styles.headerDesc, { color: colors.muted }]}>
             Record community barrier analysis sessions and participant details
           </Text>
@@ -148,13 +149,13 @@ export default function CommunityBarriersScreen() {
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Session Details</Text>
 
-        <Text style={[styles.label, { color: colors.text }]}>Date *</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Date & Time *</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="YYYY-MM-DD"
+          placeholder="Date and time"
           placeholderTextColor={colors.muted}
           value={formData.date}
-          onChangeText={(v) => updateField('date', v)}
+          editable={false}
         />
 
         <Text style={[styles.label, { color: colors.text }]}>Venue *</Text>
@@ -168,30 +169,58 @@ export default function CommunityBarriersScreen() {
 
         <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={true} />
 
-        <Text style={[styles.label, { color: colors.text }]}>Community</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Enter community name"
-          placeholderTextColor={colors.muted}
-          value={formData.community}
-          onChangeText={(v) => updateField('community', v)}
-        />
-
-        <Text style={[styles.label, { color: colors.text }]}>Group Type *</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Community * (Select multiple)</Text>
         <View style={styles.chipRow}>
-          {GROUP_TYPES.map((g) => (
-            <Pressable
-              key={g}
-              style={[
-                styles.chip,
-                { backgroundColor: colors.card, borderColor: colors.border },
-                formData.group_type === g && { backgroundColor: colors.primary, borderColor: colors.primary },
-              ]}
-              onPress={() => updateField('group_type', g)}
-            >
-              <Text style={{ color: formData.group_type === g ? '#fff' : colors.text, fontSize: 13 }}>{g}</Text>
-            </Pressable>
-          ))}
+          {COMMUNITIES.map((c) => {
+            const isSelected = Array.isArray(formData.community) && formData.community.includes(c);
+            return (
+              <Pressable
+                key={c}
+                style={[
+                  styles.chip,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
+                ]}
+                onPress={() => {
+                  const current = Array.isArray(formData.community) ? formData.community : [];
+                  if (isSelected) {
+                    updateField('community', current.filter(item => item !== c));
+                  } else {
+                    updateField('community', [...current, c]);
+                  }
+                }}
+              >
+                <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 13 }}>{c}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Text style={[styles.label, { color: colors.text }]}>Group Type * (Select multiple)</Text>
+        <View style={styles.chipRow}>
+          {GROUP_TYPES.map((g) => {
+            const isSelected = Array.isArray(formData.group_type) && formData.group_type.includes(g);
+            return (
+              <Pressable
+                key={g}
+                style={[
+                  styles.chip,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
+                ]}
+                onPress={() => {
+                  const current = Array.isArray(formData.group_type) ? formData.group_type : [];
+                  if (isSelected) {
+                    updateField('group_type', current.filter(item => item !== g));
+                  } else {
+                    updateField('group_type', [...current, g]);
+                  }
+                }}
+              >
+                <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 13 }}>{g}</Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>

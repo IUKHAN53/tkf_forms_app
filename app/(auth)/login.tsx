@@ -54,7 +54,7 @@ export default function LoginScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text style={[styles.appTitle, { color: colors.primary }]}>Community Lead Engagement</Text>
+        <Text style={[styles.appTitle, { color: colors.primary }]}>Community Led Engagement</Text>
         <Text style={[styles.subtitle, { color: colors.muted }]}>Sign in to continue</Text>
       </View>
 

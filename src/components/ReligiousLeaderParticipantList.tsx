@@ -5,28 +5,28 @@ import { Participant } from '../api/coreForms';
 import { PhoneInput } from './PhoneInput';
 import { CNICInput } from './CNICInput';
 
-interface ParticipantListProps {
+interface ReligiousLeaderParticipantListProps {
   participants: Participant[];
   onChange: (participants: Participant[]) => void;
 }
 
 const emptyParticipant: Participant = {
   name: '',
-  occupation: '',
+  title_designation: '',
   address: '',
   contact_no: '',
   cnic: '',
   gender: '',
 };
 
-export function ParticipantList({ participants, onChange }: ParticipantListProps) {
+export function ReligiousLeaderParticipantList({ participants, onChange }: ReligiousLeaderParticipantListProps) {
   const { colors } = useThemeColors();
   const [modalVisible, setModalVisible] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [currentParticipant, setCurrentParticipant] = useState<Participant>(emptyParticipant);
 
   const openAddModal = () => {
-    setCurrentParticipant({ ...emptyParticipant, sr_no: participants.length + 1 });
+    setCurrentParticipant({ ...emptyParticipant });
     setEditIndex(null);
     setModalVisible(true);
   };
@@ -52,10 +52,6 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
 
   const handleDelete = (index: number) => {
     const newParticipants = participants.filter((_, i) => i !== index);
-    // Re-number sr_no
-    newParticipants.forEach((p, i) => {
-      p.sr_no = i + 1;
-    });
     onChange(newParticipants);
   };
 
@@ -90,7 +86,7 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
             <View style={[styles.participantCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <View style={styles.participantHeader}>
                 <Text style={[styles.participantName, { color: colors.text }]}>
-                  {item.sr_no}. {item.name}
+                  {item.name}
                 </Text>
                 <View style={styles.participantActions}>
                   <Pressable onPress={() => openEditModal(index)}>
@@ -101,6 +97,11 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
                   </Pressable>
                 </View>
               </View>
+              {item.title_designation && (
+                <Text style={[styles.participantDetail, { color: colors.muted }]}>
+                  {item.title_designation}
+                </Text>
+              )}
               {item.contact_no && (
                 <Text style={[styles.participantDetail, { color: colors.muted }]}>
                   📞 {item.contact_no}
@@ -127,25 +128,27 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
               onChangeText={(v) => updateField('name', v)}
             />
 
-            <Text style={[styles.label, { color: colors.text }]}>Occupation</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Title/Designation</Text>
             <TextInput
               style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="Enter occupation"
+              placeholder="Enter title or designation"
               placeholderTextColor={colors.muted}
-              value={currentParticipant.occupation || ''}
-              onChangeText={(v) => updateField('occupation', v)}
+              value={currentParticipant.title_designation || ''}
+              onChangeText={(v) => updateField('title_designation', v)}
             />
 
-            <Text style={[styles.label, { color: colors.text }]}>Address</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Complete Address</Text>
             <TextInput
               style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="Enter address"
+              placeholder="Enter complete address"
               placeholderTextColor={colors.muted}
               value={currentParticipant.address || ''}
               onChangeText={(v) => updateField('address', v)}
+              multiline
+              numberOfLines={2}
             />
 
-            <Text style={[styles.label, { color: colors.text }]}>Contact No.</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Contact Number</Text>
             <PhoneInput
               style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
               placeholderTextColor={colors.muted}
@@ -266,23 +269,24 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: '90%',
+    maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    fontWeight: '600',
+    marginBottom: 20,
   },
   label: {
     fontSize: 14,
     fontWeight: '500',
-    marginBottom: 8,
     marginTop: 12,
+    marginBottom: 6,
   },
   input: {
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
+    fontSize: 15,
   },
   genderRow: {
     flexDirection: 'row',
@@ -291,8 +295,8 @@ const styles = StyleSheet.create({
   genderBtn: {
     flex: 1,
     padding: 12,
-    borderRadius: 8,
     borderWidth: 1,
+    borderRadius: 8,
     alignItems: 'center',
   },
   modalBtns: {
@@ -304,8 +308,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 8,
-    borderWidth: 1,
     alignItems: 'center',
+    borderWidth: 1,
   },
   saveBtn: {
     flex: 1,

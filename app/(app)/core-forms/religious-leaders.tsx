@@ -16,11 +16,11 @@ import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
 import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
-import { ParticipantList } from '../../../src/components/ParticipantList';
+import { ReligiousLeaderParticipantList } from '../../../src/components/ReligiousLeaderParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
 import { religiousLeaderApi, ReligiousLeader, Participant, generateFormId } from '../../../src/api/coreForms';
 
-const GROUP_TYPES = ['Religious Scholars', 'Ulema', 'Madrassa Teachers', 'Mosque Imams', 'Other'];
+const GROUP_TYPES = ['Religious Leaders', 'Community Influencers', 'Both'];
 
 export default function ReligiousLeadersScreen() {
   const router = useRouter();
@@ -48,7 +48,7 @@ export default function ReligiousLeadersScreen() {
   }, []);
 
   const [formData, setFormData] = useState<ReligiousLeader>({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString(),
     attached_hf: '',
     uc: '',
     district: '',
@@ -143,11 +143,12 @@ export default function ReligiousLeadersScreen() {
 
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Session Details</Text>
 
-        <Text style={[styles.label, { color: colors.text }]}>Date *</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Date & Time *</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="YYYY-MM-DD"
+          placeholder="Date and time"
           placeholderTextColor={colors.muted}
+          editable={false}
           value={formData.date}
           onChangeText={(v) => updateField('date', v)}
         />
@@ -211,7 +212,7 @@ export default function ReligiousLeadersScreen() {
           </Text>
         )}
 
-        <ParticipantList
+        <ReligiousLeaderParticipantList
           participants={formData.participants}
           onChange={handleParticipantsChange}
         />
