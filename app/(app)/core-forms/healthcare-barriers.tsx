@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,11 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
+import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
 import { ParticipantList } from '../../../src/components/ParticipantList';
-import { healthcareBarrierApi, HealthcareBarrier, Participant } from '../../../src/api/coreForms';
+import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { healthcareBarrierApi, HealthcareBarrier, Participant, generateFormId } from '../../../src/api/coreForms';
 
 const GROUP_TYPES = ['Healthcare Workers', 'Doctors', 'Nurses', 'Lady Health Workers', 'Vaccinators', 'Other'];
 
@@ -24,7 +26,26 @@ export default function HealthcareBarriersScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
   const [loading, setLoading] = useState(false);
+  const [formId, setFormId] = useState<string | null>(null);
+  const [formIdLoading, setFormIdLoading] = useState(true);
   const { loading: locationLoading, getLocation } = useLocation();
+  const { getDeviceInfo } = useDeviceInfo();
+  const startedAt = useRef(new Date().toISOString());
+
+  useEffect(() => {
+    const fetchFormId = async () => {
+      try {
+        const id = await generateFormId('healthcare_barrier');
+        setFormId(id);
+      } catch (error) {
+        console.error('Failed to generate form ID:', error);
+        setFormId(`HB-${Date.now().toString(36).toUpperCase()}`);
+      } finally {
+        setFormIdLoading(false);
+      }
+    };
+    fetchFormId();
+  }, []);
 
   const [formData, setFormData] = useState<HealthcareBarrier>({
     date: new Date().toISOString().split('T')[0],
@@ -89,7 +110,14 @@ export default function HealthcareBarriersScreen() {
 
     try {
       setLoading(true);
-      await healthcareBarrierApi.create(formData);
+      const submitData = {
+        ...formData,
+        unique_id: formId || undefined,
+        device_info: getDeviceInfo(),
+        started_at: startedAt.current,
+        submitted_at: new Date().toISOString(),
+      };
+      await healthcareBarrierApi.create(submitData);
       Alert.alert('Success', 'Healthcare barrier activity saved successfully', [
         { text: 'OK', onPress: () => router.back() },
       ]);
@@ -106,6 +134,8 @@ export default function HealthcareBarriersScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Healthcare Barriers Form" />
+
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>🏥 Healthcare Barrier Activity</Text>
           <Text style={[styles.headerDesc, { color: colors.muted }]}>

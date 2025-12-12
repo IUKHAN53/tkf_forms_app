@@ -1,7 +1,33 @@
 import { api } from './client';
 
+// Generate unique form ID
+export type FormType = 'area_mapping' | 'draft_list' | 'religious_leader' | 'community_barrier' | 'healthcare_barrier';
+
+export const generateFormId = async (formType: FormType): Promise<string> => {
+  const { data } = await api.post('/form-id/generate', { form_type: formType });
+  return data.unique_id;
+};
+
+// Form Metadata - sent with every form submission
+export interface FormMetadata {
+  unique_id?: string;
+  device_info?: {
+    platform: string;
+    os_version: string;
+    device_name: string;
+    device_model: string;
+    device_brand: string;
+    app_version: string;
+    app_build: string;
+    is_device: boolean;
+    device_year: number | null;
+  };
+  started_at?: string;
+  submitted_at?: string;
+}
+
 // Area Mapping
-export interface AreaMapping {
+export interface AreaMapping extends FormMetadata {
   id?: number;
   district: string;
   town: string;
@@ -42,7 +68,7 @@ export const areaMappingApi = {
 };
 
 // Draft List
-export interface DraftList {
+export interface DraftList extends FormMetadata {
   id?: number;
   division: string;
   district: string;
@@ -90,7 +116,7 @@ export interface Participant {
 }
 
 // Religious Leader
-export interface ReligiousLeader {
+export interface ReligiousLeader extends FormMetadata {
   id?: number;
   date: string;
   attached_hf: string;
@@ -116,7 +142,7 @@ export const religiousLeaderApi = {
 };
 
 // Community Barrier
-export interface CommunityBarrier {
+export interface CommunityBarrier extends FormMetadata {
   id?: number;
   date: string;
   venue: string;
@@ -146,7 +172,7 @@ export const communityBarrierApi = {
 };
 
 // Healthcare Barrier
-export interface HealthcareBarrier {
+export interface HealthcareBarrier extends FormMetadata {
   id?: number;
   date: string;
   hfs: string;

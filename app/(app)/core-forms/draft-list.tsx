@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,8 +14,10 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
+import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
-import { draftListApi, DraftList } from '../../../src/api/coreForms';
+import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { draftListApi, DraftList, generateFormId } from '../../../src/api/coreForms';
 
 const CHILD_TYPES = ['Zero Dose', 'Defaulter', 'Refusal'];
 const VACCINES = ['BCG', 'OPV0', 'OPV1', 'OPV2', 'OPV3', 'Penta1', 'Penta2', 'Penta3', 'Measles1', 'Measles2', 'PCV1', 'PCV2', 'PCV3'];
@@ -25,7 +27,26 @@ export default function DraftListScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
   const [loading, setLoading] = useState(false);
+  const [formId, setFormId] = useState<string | null>(null);
+  const [formIdLoading, setFormIdLoading] = useState(true);
   const { loading: locationLoading, getLocation } = useLocation();
+  const { getDeviceInfo } = useDeviceInfo();
+  const startedAt = useRef(new Date().toISOString());
+
+  useEffect(() => {
+    const fetchFormId = async () => {
+      try {
+        const id = await generateFormId('draft_list');
+        setFormId(id);
+      } catch (error) {
+        console.error('Failed to generate form ID:', error);
+        setFormId(`DL-${Date.now().toString(36).toUpperCase()}`);
+      } finally {
+        setFormIdLoading(false);
+      }
+    };
+    fetchFormId();
+  }, []);
 
   const [formData, setFormData] = useState<DraftList>({
     division: '',
@@ -101,7 +122,14 @@ export default function DraftListScreen() {
 
     try {
       setLoading(true);
-      await draftListApi.create(formData);
+      const submitData = {
+        ...formData,
+        unique_id: formId || undefined,
+        device_info: getDeviceInfo(),
+        started_at: startedAt.current,
+        submitted_at: new Date().toISOString(),
+      };
+      await draftListApi.create(submitData);
       Alert.alert('Success', 'Draft list entry saved successfully', [
         { text: 'OK', onPress: () => router.back() },
       ]);
@@ -118,6 +146,8 @@ export default function DraftListScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Draft List Form" />
+
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Location Details</Text>
         
         <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={false} />

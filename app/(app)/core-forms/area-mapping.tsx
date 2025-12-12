@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,36 @@ import {
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
+import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
-import { areaMappingApi, AreaMapping } from '../../../src/api/coreForms';
+import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { areaMappingApi, AreaMapping, generateFormId } from '../../../src/api/coreForms';
 
 export default function AreaMappingScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
   const [loading, setLoading] = useState(false);
+  const [formId, setFormId] = useState<string | null>(null);
+  const [formIdLoading, setFormIdLoading] = useState(true);
   const { loading: locationLoading, getLocation } = useLocation();
+  const { getDeviceInfo } = useDeviceInfo();
+  const startedAt = useRef(new Date().toISOString());
+
+  useEffect(() => {
+    const fetchFormId = async () => {
+      try {
+        const id = await generateFormId('area_mapping');
+        setFormId(id);
+      } catch (error) {
+        console.error('Failed to generate form ID:', error);
+        // Generate a local fallback ID
+        setFormId(`AM-${Date.now().toString(36).toUpperCase()}`);
+      } finally {
+        setFormIdLoading(false);
+      }
+    };
+    fetchFormId();
+  }, []);
   
   const [formData, setFormData] = useState<AreaMapping>({
     district: '',
@@ -82,7 +104,14 @@ export default function AreaMappingScreen() {
 
     try {
       setLoading(true);
-      await areaMappingApi.create(formData);
+      const submitData = {
+        ...formData,
+        unique_id: formId || undefined,
+        device_info: getDeviceInfo(),
+        started_at: startedAt.current,
+        submitted_at: new Date().toISOString(),
+      };
+      await areaMappingApi.create(submitData);
       Alert.alert('Success', 'Area mapping saved successfully', [
         { text: 'OK', onPress: () => router.back() },
       ]);
@@ -99,6 +128,8 @@ export default function AreaMappingScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Area Mapping Form" />
+
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Location Details</Text>
         
         <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={true} />
