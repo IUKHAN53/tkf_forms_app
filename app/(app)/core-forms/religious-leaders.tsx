@@ -6,11 +6,11 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from '../../../src/utils/errorDialogs';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
@@ -94,15 +94,15 @@ export default function ReligiousLeadersScreen() {
   const handleSubmit = async () => {
     // Validation
     if (!formData.district || !formData.uc || !formData.outreach) {
-      Alert.alert('Validation Error', 'Please select all location fields');
+      showWarningDialog('Validation Error', 'Please select all location fields');
       return;
     }
     if (!formData.date || !formData.group_type || !formData.facilitator_tkf) {
-      Alert.alert('Validation Error', 'Please fill all required fields');
+      showWarningDialog('Validation Error', 'Please fill all required fields');
       return;
     }
     if (formData.participants.length === 0) {
-      Alert.alert('Validation Error', 'Please add at least one participant');
+      showWarningDialog('Validation Error', 'Please add at least one participant');
       return;
     }
 
@@ -116,11 +116,9 @@ export default function ReligiousLeadersScreen() {
         submitted_at: new Date().toISOString(),
       };
       await religiousLeaderApi.create(submitData);
-      Alert.alert('Success', 'Religious leaders activity saved successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      showSuccessDialog('Success', 'Religious leaders activity saved successfully', () => router.back());
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save');
+      showErrorDialog(error);
     } finally {
       setLoading(false);
     }

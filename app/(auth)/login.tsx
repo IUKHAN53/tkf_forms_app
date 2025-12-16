@@ -1,10 +1,11 @@
 import React from 'react';
-import { Alert, Pressable, Text, TextInput, View, StyleSheet, Image, Dimensions } from 'react-native';
+import { Pressable, Text, TextInput, View, StyleSheet, Image, Dimensions } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { LinearGradient } from 'expo-linear-gradient';
 import { login } from '../../src/api/auth';
 import { useUserStore } from '../../src/store/userStore';
 import { useThemeColors } from '../../src/store/themeStore';
+import { showErrorDialog } from '../../src/utils/errorDialogs';
 
 interface FormValues {
   phone: string;
@@ -28,8 +29,13 @@ export default function LoginScreen() {
     try {
       const res = await login(values.phone, values.password);
       setSession(res.token, res.user);
-    } catch (error) {
-      Alert.alert('Login failed', 'Check your credentials and try again');
+    } catch (error: any) {
+      showErrorDialog(error, {
+        customTitle: 'Login Failed',
+        customMessage: error.response?.status === 401 
+          ? 'Invalid phone number or password. Please try again.'
+          : undefined,
+      });
     }
   };
 

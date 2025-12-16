@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -14,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '../../src/store/themeStore';
 import { useUserStore } from '../../src/store/userStore';
 import { api } from '../../src/api/client';
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from '../../src/utils/errorDialogs';
 
 export default function ProfileScreen() {
   const { colors } = useThemeColors();
@@ -28,11 +28,11 @@ export default function ProfileScreen() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Name is required');
+      showWarningDialog('Required', 'Name is required');
       return;
     }
     if (!email.trim()) {
-      Alert.alert('Error', 'Email is required');
+      showWarningDialog('Required', 'Email is required');
       return;
     }
 
@@ -45,11 +45,9 @@ export default function ProfileScreen() {
       });
       
       setUser(response.data.user);
-      Alert.alert('Success', 'Profile updated successfully');
-      router.back();
+      showSuccessDialog('Success', 'Profile updated successfully', () => router.back());
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to update profile';
-      Alert.alert('Error', message);
+      showErrorDialog(error);
     } finally {
       setIsLoading(false);
     }

@@ -6,11 +6,11 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from '../../../src/utils/errorDialogs';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
@@ -96,15 +96,15 @@ export default function HealthcareBarriersScreen() {
   const handleSubmit = async () => {
     // Validation
     if (!formData.uc) {
-      Alert.alert('Validation Error', 'Please select Union Council');
+      showWarningDialog('Validation Error', 'Please select Union Council');
       return;
     }
     if (!formData.date || !formData.hfs || !formData.group_type || !formData.facilitator_tkf) {
-      Alert.alert('Validation Error', 'Please fill all required fields');
+      showWarningDialog('Validation Error', 'Please fill all required fields');
       return;
     }
     if (formData.participants.length === 0) {
-      Alert.alert('Validation Error', 'Please add at least one participant');
+      showWarningDialog('Validation Error', 'Please add at least one participant');
       return;
     }
 
@@ -118,11 +118,9 @@ export default function HealthcareBarriersScreen() {
         submitted_at: new Date().toISOString(),
       };
       await healthcareBarrierApi.create(submitData);
-      Alert.alert('Success', 'Healthcare Workers Explore Immunization Barriers activity saved successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      showSuccessDialog('Success', 'Healthcare Workers Explore Immunization Barriers activity saved successfully', () => router.back());
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save');
+      showErrorDialog(error);
     } finally {
       setLoading(false);
     }

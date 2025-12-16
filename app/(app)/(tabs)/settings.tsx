@@ -6,7 +6,6 @@ import {
   Pressable,
   StyleSheet,
   Switch,
-  Alert,
   ActivityIndicator,
   Linking,
 } from 'react-native';
@@ -18,6 +17,7 @@ import { useUserStore } from '../../../src/store/userStore';
 import { useOfflineQueueStore } from '../../../src/store/offlineQueueStore';
 import { api } from '../../../src/api/client';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { showErrorDialog, showSuccessDialog, showConfirmDialog } from '../../../src/utils/errorDialogs';
 
 type SettingsItemProps = {
   icon: string;
@@ -83,40 +83,34 @@ export default function SettingsScreen() {
       };
 
       await api.post('/logs', logData);
-      Alert.alert('Success', 'Logs sent successfully to the server.');
+      showSuccessDialog('Success', 'Logs sent successfully to the server.');
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to send logs. Please try again.');
+      showErrorDialog(error);
     } finally {
       setSendingLogs(false);
     }
   };
 
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Logout',
-        style: 'destructive',
-        onPress: clearSession,
-      },
-    ]);
+    showConfirmDialog(
+      'Logout',
+      'Are you sure you want to logout?',
+      clearSession,
+      undefined,
+      { confirmText: 'Logout', destructive: true }
+    );
   };
 
   const handleClearData = () => {
-    Alert.alert(
+    showConfirmDialog(
       'Clear Local Data',
       'This will clear all locally cached data. Pending submissions will be lost. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: () => {
-            // Would implement cache clearing here
-            Alert.alert('Done', 'Local data cleared.');
-          },
-        },
-      ]
+      () => {
+        // Would implement cache clearing here
+        showSuccessDialog('Done', 'Local data cleared.');
+      },
+      undefined,
+      { confirmText: 'Clear', destructive: true }
     );
   };
 
