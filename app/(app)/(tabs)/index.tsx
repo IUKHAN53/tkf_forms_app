@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,6 +15,7 @@ import { useThemeColors } from '../../../src/store/themeStore';
 import { useUserStore } from '../../../src/store/userStore';
 import { useOfflineQueueStore } from '../../../src/store/offlineQueueStore';
 import { useForms } from '../../../src/hooks/useForms';
+import { useDashboardStats } from '../../../src/hooks/useDashboardStats';
 
 const { width } = Dimensions.get('window');
 
@@ -112,14 +114,19 @@ export default function HomeScreen() {
   const queueCount = useOfflineQueueStore((s) => s.queue.length);
   const syncStatus = useOfflineQueueStore((s) => s.syncStatus);
   const { data: forms, refetch, isLoading } = useForms();
+  const { stats, loading: statsLoading, refetch: refetchStats } = useDashboardStats();
   const [refreshing, setRefreshing] = useState(false);
 
-  // Mock data for weekly submissions chart
-  const weeklyData = [12, 19, 8, 15, 22, 10, 5];
+  // Use API data or fallback to empty data
+  const weeklyData = stats?.weekly_data ?? [0, 0, 0, 0, 0, 0, 0];
+  const recentActivity = stats?.recent_activity ?? [];
+  const todayCount = stats?.today?.count ?? 0;
+  const percentChange = stats?.today?.percent_change ?? 0;
+  const thisWeekTotal = stats?.this_week ?? 0;
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await Promise.all([refetch(), refetchStats()]);
     setRefreshing(false);
   };
 
@@ -172,12 +179,12 @@ export default function HomeScreen() {
         <StatCard title="Pending Sync" value={queueCount} icon="📤" color={COLORS.warning} />
         <StatCard
           title="Today"
-          value={weeklyData[6]}
+          value={todayCount}
           icon="📊"
           color={COLORS.success}
-          subtitle="+12% from yesterday"
+          subtitle={percentChange !== 0 ? `${percentChange > 0 ? '+' : ''}${percentChange}% from yesterday` : undefined}
         />
-        <StatCard title="This Week" value={weeklyData.reduce((a, b) => a + b, 0)} icon="📈" color={COLORS.info} />
+        <StatCard title="This Week" value={thisWeekTotal} icon="📈" color={COLORS.info} />
       </View>
 
       {/* Weekly Activity Chart */}
@@ -206,19 +213,27 @@ export default function HomeScreen() {
       {/* Recent Activity */}
       <View style={[styles.recentCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Text style={[styles.recentTitle, { color: colors.text }]}>Recent Activity</Text>
-        {[
-          { action: 'Submitted Area Mapping', time: '2 hours ago', icon: '✅' },
-          { action: 'Draft List saved offline', time: '4 hours ago', icon: '💾' },
-          { action: 'Synced 3 submissions', time: 'Yesterday', icon: '🔄' },
-        ].map((item, index) => (
-          <View key={index} style={[styles.activityItem, { borderColor: colors.border }]}>
-            <Text style={styles.activityIcon}>{item.icon}</Text>
-            <View style={styles.activityContent}>
-              <Text style={[styles.activityAction, { color: colors.text }]}>{item.action}</Text>
-              <Text style={[styles.activityTime, { color: colors.muted }]}>{item.time}</Text>
-            </View>
+        {statsLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={COLORS.primary} />
+            <Text style={[styles.loadingText, { color: colors.muted }]}>Loading activity...</Text>
           </View>
-        ))}
+        ) : recentActivity.length > 0 ? (
+          recentActivity.slice(0, 5).map((item, index) => (
+            <View key={index} style={[styles.activityItem, { borderColor: colors.border }]}>
+              <Text style={styles.activityIcon}>{item.icon}</Text>
+              <View style={styles.activityContent}>
+                <Text style={[styles.activityAction, { color: colors.text }]}>{item.action}</Text>
+                <Text style={[styles.activityTime, { color: colors.muted }]}>{item.time}</Text>
+              </View>
+            </View>
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={[styles.emptyText, { color: colors.muted }]}>No recent activity</Text>
+            <Text style={[styles.emptySubtext, { color: colors.muted }]}>Submit a form to see your activity here</Text>
+          </View>
+        )}
       </View>
 
       <View style={{ height: 100 }} />
@@ -412,5 +427,25 @@ const styles = StyleSheet.create({
   activityTime: {
     fontSize: 12,
     marginTop: 2,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  loadingText: {
+    marginTop: 8,
+    fontSize: 14,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  emptySubtext: {
+    fontSize: 12,
+    marginTop: 4,
   },
 });
