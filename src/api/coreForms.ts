@@ -115,7 +115,6 @@ export interface CommunityBarrier extends FormMetadata {
   fix_site: string;
   outreach: string;
   community: string[];
-  group_type: string[];
   participants_males: number;
   participants_females: number;
   facilitator_tkf: string;

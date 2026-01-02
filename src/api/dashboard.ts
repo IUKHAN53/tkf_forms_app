@@ -1,4 +1,4 @@
-import api from './client';
+import { api } from './client';
 
 export interface DashboardStats {
   weekly_data: number[];

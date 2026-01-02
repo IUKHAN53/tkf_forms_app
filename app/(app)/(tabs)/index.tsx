@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useUserStore } from '../../../src/store/userStore';
 import { useOfflineQueueStore } from '../../../src/store/offlineQueueStore';
-import { useForms } from '../../../src/hooks/useForms';
 import { useDashboardStats } from '../../../src/hooks/useDashboardStats';
 
 const { width } = Dimensions.get('window');
@@ -33,7 +32,7 @@ const COLORS = {
 const GRADIENT_CARDS = [
   { colors: ['#6366f1', '#8b5cf6'], icon: '📋', label: 'Core Forms', route: '/core-forms' },
   { colors: ['#22c55e', '#16a34a'], icon: '📝', label: 'Dynamic Forms', route: '/dynamic-forms' },
-  { colors: ['#f59e0b', '#d97706'], icon: '📊', label: 'My Submissions', route: '/settings' },
+  { colors: ['#f59e0b', '#d97706'], icon: '📊', label: 'My Submissions', route: '/my-submissions' },
   { colors: ['#ec4899', '#db2777'], icon: '⚙️', label: 'Settings', route: '/settings' },
 ];
 
@@ -113,20 +112,22 @@ export default function HomeScreen() {
   const clearSession = useUserStore((s) => s.clearSession);
   const queueCount = useOfflineQueueStore((s) => s.queue.length);
   const syncStatus = useOfflineQueueStore((s) => s.syncStatus);
-  const { data: forms, refetch, isLoading } = useForms();
   const { stats, loading: statsLoading, refetch: refetchStats } = useDashboardStats();
   const [refreshing, setRefreshing] = useState(false);
 
-  // Use API data or fallback to empty data
+  // Use API data or fallback to empty data (Core forms only)
   const weeklyData = stats?.weekly_data ?? [0, 0, 0, 0, 0, 0, 0];
   const recentActivity = stats?.recent_activity ?? [];
   const todayCount = stats?.today?.count ?? 0;
   const percentChange = stats?.today?.percent_change ?? 0;
   const thisWeekTotal = stats?.this_week ?? 0;
+  const totalSubmissions = stats?.totals
+    ? Object.values(stats.totals).reduce((sum: number, val) => sum + (val as number), 0)
+    : 0;
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([refetch(), refetchStats()]);
+    await refetchStats();
     setRefreshing(false);
   };
 
@@ -175,7 +176,7 @@ export default function HomeScreen() {
 
       {/* Stats Grid */}
       <View style={styles.statsGrid}>
-        <StatCard title="Active Forms" value={forms?.length ?? 0} icon="📋" color={COLORS.primary} />
+        <StatCard title="Total Submissions" value={totalSubmissions} icon="📋" color={COLORS.primary} />
         <StatCard title="Pending Sync" value={queueCount} icon="📤" color={COLORS.warning} />
         <StatCard
           title="Today"

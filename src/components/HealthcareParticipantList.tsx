@@ -15,7 +15,7 @@ const emptyParticipant: Participant = {
   designation: '',
   contact_no: '',
   cnic: '',
-  gender: '',
+  gender: 'Male', // Default to Male
 };
 
 export function HealthcareParticipantList({ participants, onChange }: HealthcareParticipantListProps) {
@@ -82,7 +82,7 @@ export function HealthcareParticipantList({ participants, onChange }: Healthcare
       ) : (
         <FlatList
           data={participants}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(item, index) => `participant-${index}-${item.name || ''}`}
           scrollEnabled={false}
           renderItem={({ item, index }) => (
             <View style={[styles.participantCard, { backgroundColor: colors.card, borderColor: colors.border }]}>

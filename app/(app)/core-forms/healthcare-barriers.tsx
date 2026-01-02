@@ -18,6 +18,7 @@ import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
 import { HealthcareParticipantList } from '../../../src/components/HealthcareParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { DateTimePicker } from '../../../src/components/DateTimePicker';
 import { healthcareBarrierApi, HealthcareBarrier, Participant, generateFormId } from '../../../src/api/coreForms';
 
 const GROUP_TYPES = ['Medics', 'Non-Medics', 'Both'];
@@ -129,9 +130,15 @@ export default function HealthcareBarriersScreen() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.bg }]}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Healthcare Workers Explore Immunization Barriers" />
 
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -144,13 +151,10 @@ export default function HealthcareBarriersScreen() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Session Details</Text>
 
         <Text style={[styles.label, { color: colors.text }]}>Date & Time *</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          editable={false}
-          placeholder="YYYY-MM-DD"
-          placeholderTextColor={colors.muted}
-          value={formData.date}
-          onChangeText={(v) => updateField('date', v)}
+        <DateTimePicker
+          value={new Date(formData.date)}
+          onChange={(date: Date) => updateField('date', date.toISOString())}
+          mode="datetime"
         />
 
         <Text style={[styles.label, { color: colors.text }]}>Health Facility/Site (HFS) *</Text>

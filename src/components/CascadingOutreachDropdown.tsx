@@ -298,7 +298,7 @@ export function CascadingOutreachDropdown({ onSelect, showFixSite = true }: Casc
             ) : (
               <FlatList
                 data={filteredData}
-                keyExtractor={(item) => item.value}
+                keyExtractor={(item, index) => item.value || `item-${index}`}
                 renderItem={({ item }) => (
                   <Pressable
                     style={[styles.modalItem, { borderColor: colors.border }]}

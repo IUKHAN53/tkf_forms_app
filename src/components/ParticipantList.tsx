@@ -16,7 +16,7 @@ const emptyParticipant: Participant = {
   address: '',
   contact_no: '',
   cnic: '',
-  gender: '',
+  gender: 'Male', // Default to Male
 };
 
 export function ParticipantList({ participants, onChange }: ParticipantListProps) {
@@ -84,7 +84,7 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
       ) : (
         <FlatList
           data={participants}
-          keyExtractor={(_, index) => index.toString()}
+          keyExtractor={(item, index) => `participant-${index}-${item.name || ''}`}
           scrollEnabled={false}
           renderItem={({ item, index }) => (
             <View style={[styles.participantCard, { backgroundColor: colors.card, borderColor: colors.border }]}>

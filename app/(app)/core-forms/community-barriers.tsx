@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
@@ -18,9 +19,9 @@ import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
 import { ParticipantList } from '../../../src/components/ParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
+import { DateTimePicker } from '../../../src/components/DateTimePicker';
 import { communityBarrierApi, CommunityBarrier, Participant, generateFormId } from '../../../src/api/coreForms';
 
-const GROUP_TYPES = ['Teachers', 'Shopkeepers', 'Religious Leaders', 'Political Leaders', 'Mother in Laws', 'Mothers', 'Fathers', 'Father in Laws'];
 const COMMUNITIES = ['Pathan', 'Punjabi', 'Sindhi', 'Saraiki', 'Urdu speaking'];
 
 export default function CommunityBarriersScreen() {
@@ -56,12 +57,15 @@ export default function CommunityBarriersScreen() {
     fix_site: '',
     outreach: '',
     community: [],
-    group_type: [],
     participants_males: 0,
     participants_females: 0,
     facilitator_tkf: '',
     participants: [],
   });
+
+  // State for custom community entry
+  const [showCustomCommunityModal, setShowCustomCommunityModal] = useState(false);
+  const [customCommunity, setCustomCommunity] = useState('');
 
   const updateField = <K extends keyof CommunityBarrier>(field: K, value: CommunityBarrier[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -97,14 +101,29 @@ export default function CommunityBarriersScreen() {
     }
   };
 
+  const handleAddCustomCommunity = () => {
+    if (customCommunity.trim()) {
+      const current = Array.isArray(formData.community) ? formData.community : [];
+      if (!current.includes(customCommunity.trim())) {
+        updateField('community', [...current, customCommunity.trim()]);
+      }
+      setCustomCommunity('');
+      setShowCustomCommunityModal(false);
+    }
+  };
+
   const handleSubmit = async () => {
     // Validation
     if (!formData.district || !formData.uc || !formData.outreach) {
       Alert.alert('Validation Error', 'Please select all location fields');
       return;
     }
-    if (!formData.date || !formData.venue || !formData.group_type || !formData.facilitator_tkf) {
+    if (!formData.date || !formData.venue || !formData.facilitator_tkf) {
       Alert.alert('Validation Error', 'Please fill all required fields');
+      return;
+    }
+    if (formData.community.length === 0) {
+      Alert.alert('Validation Error', 'Please select at least one community');
       return;
     }
     if (formData.participants.length === 0) {
@@ -135,9 +154,15 @@ export default function CommunityBarriersScreen() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
     >
-      <ScrollView style={[styles.container, { backgroundColor: colors.bg }]}>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.bg }]}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Community Explore Immunization Barriers" />
 
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -150,12 +175,10 @@ export default function CommunityBarriersScreen() {
         <Text style={[styles.sectionTitle, { color: colors.text }]}>Session Details</Text>
 
         <Text style={[styles.label, { color: colors.text }]}>Date & Time *</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Date and time"
-          placeholderTextColor={colors.muted}
-          value={formData.date}
-          editable={false}
+        <DateTimePicker
+          value={new Date(formData.date)}
+          onChange={(date: Date) => updateField('date', date.toISOString())}
+          mode="datetime"
         />
 
         <Text style={[styles.label, { color: colors.text }]}>Venue *</Text>
@@ -169,7 +192,7 @@ export default function CommunityBarriersScreen() {
 
         <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={true} />
 
-        <Text style={[styles.label, { color: colors.text }]}>Community * (Select multiple)</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Community * (Select multiple or add custom)</Text>
         <View style={styles.chipRow}>
           {COMMUNITIES.map((c) => {
             const isSelected = Array.isArray(formData.community) && formData.community.includes(c);
@@ -194,33 +217,34 @@ export default function CommunityBarriersScreen() {
               </Pressable>
             );
           })}
-        </View>
-
-        <Text style={[styles.label, { color: colors.text }]}>Group Type * (Select multiple)</Text>
-        <View style={styles.chipRow}>
-          {GROUP_TYPES.map((g) => {
-            const isSelected = Array.isArray(formData.group_type) && formData.group_type.includes(g);
-            return (
+          {/* Show custom communities that are not in COMMUNITIES */}
+          {formData.community
+            .filter(c => !COMMUNITIES.includes(c))
+            .map((c) => (
               <Pressable
-                key={g}
+                key={c}
                 style={[
                   styles.chip,
-                  { backgroundColor: colors.card, borderColor: colors.border },
-                  isSelected && { backgroundColor: colors.primary, borderColor: colors.primary },
+                  { backgroundColor: colors.primary, borderColor: colors.primary },
                 ]}
                 onPress={() => {
-                  const current = Array.isArray(formData.group_type) ? formData.group_type : [];
-                  if (isSelected) {
-                    updateField('group_type', current.filter(item => item !== g));
-                  } else {
-                    updateField('group_type', [...current, g]);
-                  }
+                  const current = formData.community.filter(item => item !== c);
+                  updateField('community', current);
                 }}
               >
-                <Text style={{ color: isSelected ? '#fff' : colors.text, fontSize: 13 }}>{g}</Text>
+                <Text style={{ color: '#fff', fontSize: 13 }}>{c} ✕</Text>
               </Pressable>
-            );
-          })}
+            ))}
+          {/* Add Other button */}
+          <Pressable
+            style={[
+              styles.chip,
+              { backgroundColor: colors.card, borderColor: colors.primary, borderStyle: 'dashed' },
+            ]}
+            onPress={() => setShowCustomCommunityModal(true)}
+          >
+            <Text style={{ color: colors.primary, fontSize: 13 }}>+ Add Other</Text>
+          </Pressable>
         </View>
 
         <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>
@@ -302,6 +326,41 @@ export default function CommunityBarriersScreen() {
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Custom Community Modal */}
+      <Modal visible={showCustomCommunityModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.bg }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Add Custom Community</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Community Name</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+              placeholder="Enter community name"
+              placeholderTextColor={colors.muted}
+              value={customCommunity}
+              onChangeText={setCustomCommunity}
+              autoFocus
+            />
+            <View style={styles.modalBtns}>
+              <Pressable
+                style={[styles.cancelBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                onPress={() => {
+                  setShowCustomCommunityModal(false);
+                  setCustomCommunity('');
+                }}
+              >
+                <Text style={{ color: colors.text }}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.saveBtn, { backgroundColor: colors.primary }]}
+                onPress={handleAddCustomCommunity}
+              >
+                <Text style={styles.saveBtnText}>Add</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -379,6 +438,43 @@ const styles = StyleSheet.create({
   submitBtnText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  modalBtns: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+  },
+  cancelBtn: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  saveBtn: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveBtnText: {
+    color: '#fff',
     fontWeight: '600',
   },
 });

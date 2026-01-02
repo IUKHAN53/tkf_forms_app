@@ -6,11 +6,13 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDashboardStats } from '../../../src/hooks/useDashboardStats';
 
 const { width } = Dimensions.get('window');
 
@@ -86,6 +88,14 @@ function FormCard({ title, description, icon, colors, onPress }: FormCardProps) 
 export default function CoreFormsScreen() {
   const router = useRouter();
   const { colors, scheme } = useThemeColors();
+  const { stats, loading } = useDashboardStats();
+
+  // Calculate total submissions from stats
+  const totalSubmissions = stats?.totals
+    ? Object.values(stats.totals).reduce((sum, val) => sum + val, 0)
+    : 0;
+  const todayCount = stats?.today?.count ?? 0;
+  const thisWeekCount = stats?.this_week ?? 0;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]} edges={['top']}>
@@ -102,16 +112,28 @@ export default function CoreFormsScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.statsRow}>
           <View style={[styles.statBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statValue, { color: colors.primary }]}>5</Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>Forms</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color={colors.primary} />
+            ) : (
+              <Text style={[styles.statValue, { color: colors.primary }]}>{totalSubmissions}</Text>
+            )}
+            <Text style={[styles.statLabel, { color: colors.muted }]}>Total</Text>
           </View>
           <View style={[styles.statBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statValue, { color: '#22c55e' }]}>12</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#22c55e" />
+            ) : (
+              <Text style={[styles.statValue, { color: '#22c55e' }]}>{todayCount}</Text>
+            )}
             <Text style={[styles.statLabel, { color: colors.muted }]}>Today</Text>
           </View>
           <View style={[styles.statBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.statValue, { color: '#f59e0b' }]}>3</Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>Pending</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#f59e0b" />
+            ) : (
+              <Text style={[styles.statValue, { color: '#f59e0b' }]}>{thisWeekCount}</Text>
+            )}
+            <Text style={[styles.statLabel, { color: colors.muted }]}>This Week</Text>
           </View>
         </View>
 

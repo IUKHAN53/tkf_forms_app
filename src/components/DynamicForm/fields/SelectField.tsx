@@ -40,8 +40,8 @@ export const SelectField: React.FC<Props> = ({ control, name, label, options, re
                 style={{ color: colors.text }}
               >
                 <Picker.Item label="Select" value="" color={colors.muted} />
-                {options.map((opt) => (
-                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                {options.map((opt, index) => (
+                  <Picker.Item key={`${opt.value || index}`} label={opt.label} value={opt.value} />
                 ))}
               </Picker>
             </View>

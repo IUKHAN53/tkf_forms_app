@@ -21,7 +21,10 @@ export default function AppLayout() {
       <Stack.Screen name="core-forms/religious-leaders" options={{ title: 'Religious Leaders Activity' }} />
       <Stack.Screen name="core-forms/community-barriers" options={{ title: 'Community Explore Immunization Barriers' }} />
       <Stack.Screen name="core-forms/healthcare-barriers" options={{ title: 'Healthcare Workers Explore Immunization Barriers' }} />
-      
+
+      {/* My Submissions */}
+      <Stack.Screen name="my-submissions" options={{ title: 'My Submissions' }} />
+
       {/* Dynamic Form Details */}
       <Stack.Screen name="forms/[id]" options={{ title: 'Form' }} />
     </Stack>

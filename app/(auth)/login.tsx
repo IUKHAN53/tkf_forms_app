@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, TextInput, View, StyleSheet, Image, Dimensions } from 'react-native';
+import { Pressable, Text, TextInput, View, StyleSheet, Image, Dimensions, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { LinearGradient } from 'expo-linear-gradient';
 import { login } from '../../src/api/auth';
@@ -32,7 +32,7 @@ export default function LoginScreen() {
     } catch (error: any) {
       showErrorDialog(error, {
         customTitle: 'Login Failed',
-        customMessage: error.response?.status === 401 
+        customMessage: error.response?.status === 401
           ? 'Invalid phone number or password. Please try again.'
           : undefined,
       });
@@ -40,7 +40,16 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.bg }]}>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.bg }]}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
       {/* Header with Logos */}
       <View style={styles.logoSection}>
         <View style={styles.logoRow}>
@@ -118,20 +127,25 @@ export default function LoginScreen() {
         </Pressable>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: colors.muted }]}>
-          Powered by EPI & TKF
-        </Text>
-      </View>
-    </View>
+        <View style={styles.footer}>
+          <Text style={[styles.footerText, { color: colors.muted }]}>
+            Powered by EPI & TKF
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 40,
   },
   logoSection: {
     alignItems: 'center',
