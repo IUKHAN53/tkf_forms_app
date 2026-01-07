@@ -6,11 +6,11 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from '../../../src/utils/errorDialogs';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
@@ -95,11 +95,11 @@ export default function AreaMappingScreen() {
   const handleSubmit = async () => {
     // Validation
     if (!formData.district || !formData.uc_name || !formData.fix_site || !formData.outreach_name) {
-      Alert.alert('Validation Error', 'Please select all location fields');
+      showWarningDialog('Validation Error', 'Please select all location fields');
       return;
     }
     if (!formData.area_name || !formData.assigned_aic || !formData.assigned_cm) {
-      Alert.alert('Validation Error', 'Please fill all required fields');
+      showWarningDialog('Validation Error', 'Please fill all required fields');
       return;
     }
 
@@ -113,11 +113,9 @@ export default function AreaMappingScreen() {
         submitted_at: new Date().toISOString(),
       };
       await areaMappingApi.create(submitData);
-      Alert.alert('Success', 'Area mapping saved successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      showSuccessDialog('Success', 'Area mapping saved successfully', () => router.back());
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save');
+      showErrorDialog(error);
     } finally {
       setLoading(false);
     }

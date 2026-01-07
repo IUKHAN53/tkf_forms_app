@@ -9,6 +9,27 @@ interface ErrorInfo {
 }
 
 /**
+ * Format field name for display (e.g., "participants.0.contact_no" -> "Participant 1 Contact No")
+ */
+function formatFieldName(field: string): string {
+  // Handle nested participant fields like "participants.0.contact_no"
+  const participantMatch = field.match(/^participants\.(\d+)\.(.+)$/);
+  if (participantMatch) {
+    const index = parseInt(participantMatch[1]) + 1;
+    const subField = participantMatch[2]
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    return `Participant ${index} ${subField}`;
+  }
+
+  // Handle simple field names
+  return field
+    .replace(/\./g, ' ')
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/**
  * Parse API errors and extract meaningful messages
  */
 export function parseApiError(error: any): ErrorInfo {
@@ -58,12 +79,23 @@ export function parseApiError(error: any): ErrorInfo {
   // Validation errors
   if (status === 422) {
     const errors = data?.errors;
-    if (errors) {
-      const firstError = Object.values(errors)[0];
-      const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
+    if (errors && typeof errors === 'object') {
+      // Format all validation errors for display
+      const errorMessages: string[] = [];
+      for (const [field, messages] of Object.entries(errors)) {
+        const fieldName = formatFieldName(field);
+        const fieldMessages = Array.isArray(messages) ? messages : [String(messages)];
+        fieldMessages.forEach((msg) => {
+          errorMessages.push(`• ${fieldName}: ${msg}`);
+        });
+      }
       return {
         title: 'Validation Error',
-        message: message || 'Please check your input and try again.',
+        message:
+          errorMessages.length > 0
+            ? errorMessages.slice(0, 5).join('\n') +
+              (errorMessages.length > 5 ? `\n\n...and ${errorMessages.length - 5} more errors` : '')
+            : 'Please check your input and try again.',
         type: 'validation',
       };
     }

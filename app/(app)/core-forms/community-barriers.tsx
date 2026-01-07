@@ -6,12 +6,12 @@ import {
   ScrollView,
   Pressable,
   StyleSheet,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Modal,
 } from 'react-native';
+import { showErrorDialog, showSuccessDialog, showWarningDialog } from '../../../src/utils/errorDialogs';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
@@ -115,19 +115,19 @@ export default function CommunityBarriersScreen() {
   const handleSubmit = async () => {
     // Validation
     if (!formData.district || !formData.uc || !formData.outreach) {
-      Alert.alert('Validation Error', 'Please select all location fields');
+      showWarningDialog('Validation Error', 'Please select all location fields');
       return;
     }
     if (!formData.date || !formData.venue || !formData.facilitator_tkf) {
-      Alert.alert('Validation Error', 'Please fill all required fields');
+      showWarningDialog('Validation Error', 'Please fill all required fields');
       return;
     }
     if (formData.community.length === 0) {
-      Alert.alert('Validation Error', 'Please select at least one community');
+      showWarningDialog('Validation Error', 'Please select at least one community');
       return;
     }
     if (formData.participants.length === 0) {
-      Alert.alert('Validation Error', 'Please add at least one participant');
+      showWarningDialog('Validation Error', 'Please add at least one participant');
       return;
     }
 
@@ -141,11 +141,9 @@ export default function CommunityBarriersScreen() {
         submitted_at: new Date().toISOString(),
       };
       await communityBarrierApi.create(submitData);
-      Alert.alert('Success', 'Community Explore Immunization Barriers activity saved successfully', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      showSuccessDialog('Success', 'Community Explore Immunization Barriers activity saved successfully', () => router.back());
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to save');
+      showErrorDialog(error);
     } finally {
       setLoading(false);
     }

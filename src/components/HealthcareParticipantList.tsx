@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Modal } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Modal, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useThemeColors } from '../store/themeStore';
 import { Participant } from '../api/coreForms';
 import { PhoneInput } from './PhoneInput';
@@ -115,81 +115,90 @@ export function HealthcareParticipantList({ participants, onChange }: Healthcare
       )}
 
       <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <View style={[styles.modalContent, { backgroundColor: colors.bg }]}>
             <Text style={[styles.modalTitle, { color: colors.text }]}>
               {editIndex !== null ? 'Edit Participant' : 'Add Participant'}
             </Text>
 
-            <Text style={[styles.label, { color: colors.text }]}>Name *</Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="Enter name"
-              placeholderTextColor={colors.muted}
-              value={currentParticipant.name}
-              onChangeText={(v) => updateField('name', v)}
-            />
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollContent}
+            >
+              <Text style={[styles.label, { color: colors.text }]}>Name *</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                placeholder="Enter name"
+                placeholderTextColor={colors.muted}
+                value={currentParticipant.name}
+                onChangeText={(v) => updateField('name', v)}
+              />
 
-            <Text style={[styles.label, { color: colors.text }]}>Designation</Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="Enter designation"
-              placeholderTextColor={colors.muted}
-              value={currentParticipant.designation || ''}
-              onChangeText={(v) => updateField('designation', v)}
-            />
+              <Text style={[styles.label, { color: colors.text }]}>Designation</Text>
+              <TextInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                placeholder="Enter designation"
+                placeholderTextColor={colors.muted}
+                value={currentParticipant.designation || ''}
+                onChangeText={(v) => updateField('designation', v)}
+              />
 
-            <Text style={[styles.label, { color: colors.text }]}>Contact No.</Text>
-            <PhoneInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholderTextColor={colors.muted}
-              value={currentParticipant.contact_no || ''}
-              onChangeText={(v) => updateField('contact_no', v)}
-            />
+              <Text style={[styles.label, { color: colors.text }]}>Contact No.</Text>
+              <PhoneInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.muted}
+                value={currentParticipant.contact_no || ''}
+                onChangeText={(v) => updateField('contact_no', v)}
+              />
 
-            <Text style={[styles.label, { color: colors.text }]}>CNIC</Text>
-            <CNICInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholderTextColor={colors.muted}
-              value={currentParticipant.cnic || ''}
-              onChangeText={(v) => updateField('cnic', v)}
-            />
+              <Text style={[styles.label, { color: colors.text }]}>CNIC</Text>
+              <CNICInput
+                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+                placeholderTextColor={colors.muted}
+                value={currentParticipant.cnic || ''}
+                onChangeText={(v) => updateField('cnic', v)}
+              />
 
-            <Text style={[styles.label, { color: colors.text }]}>Gender</Text>
-            <View style={styles.genderRow}>
-              {['Male', 'Female'].map((g) => (
+              <Text style={[styles.label, { color: colors.text }]}>Gender</Text>
+              <View style={styles.genderRow}>
+                {['Male', 'Female'].map((g) => (
+                  <Pressable
+                    key={g}
+                    style={[
+                      styles.genderBtn,
+                      { backgroundColor: colors.card, borderColor: colors.border },
+                      currentParticipant.gender === g && { backgroundColor: colors.primary, borderColor: colors.primary },
+                    ]}
+                    onPress={() => updateField('gender', g)}
+                  >
+                    <Text style={{ color: currentParticipant.gender === g ? '#fff' : colors.text }}>
+                      {g}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <View style={styles.modalBtns}>
                 <Pressable
-                  key={g}
-                  style={[
-                    styles.genderBtn,
-                    { backgroundColor: colors.card, borderColor: colors.border },
-                    currentParticipant.gender === g && { backgroundColor: colors.primary, borderColor: colors.primary },
-                  ]}
-                  onPress={() => updateField('gender', g)}
+                  style={[styles.cancelBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
+                  onPress={() => setModalVisible(false)}
                 >
-                  <Text style={{ color: currentParticipant.gender === g ? '#fff' : colors.text }}>
-                    {g}
-                  </Text>
+                  <Text style={{ color: colors.text }}>Cancel</Text>
                 </Pressable>
-              ))}
-            </View>
-
-            <View style={styles.modalBtns}>
-              <Pressable
-                style={[styles.cancelBtn, { backgroundColor: colors.card, borderColor: colors.border }]}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={{ color: colors.text }}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.saveBtn, { backgroundColor: colors.primary }]}
-                onPress={handleSave}
-              >
-                <Text style={styles.saveBtnText}>Save</Text>
-              </Pressable>
-            </View>
+                <Pressable
+                  style={[styles.saveBtn, { backgroundColor: colors.primary }]}
+                  onPress={handleSave}
+                >
+                  <Text style={styles.saveBtnText}>Save</Text>
+                </Pressable>
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
@@ -260,7 +269,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    maxHeight: '80%',
+    maxHeight: '90%',
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   modalTitle: {
     fontSize: 20,
