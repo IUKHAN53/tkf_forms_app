@@ -1,7 +1,7 @@
 import { api } from './client';
 
 // Generate unique form ID
-export type FormType = 'area_mapping' | 'draft_list' | 'religious_leader' | 'community_barrier' | 'healthcare_barrier' | 'bridging_the_gap';
+export type FormType = 'fgds_community' | 'fgds_health_workers' | 'child_line_list' | 'bridging_the_gap';
 
 export const generateFormId = async (formType: FormType): Promise<string> => {
   const { data } = await api.post('/form-id/generate', { form_type: formType });
@@ -26,46 +26,6 @@ export interface FormMetadata {
   submitted_at?: string;
 }
 
-// Area Mapping
-export interface AreaMapping extends FormMetadata {
-  id?: number;
-  district: string;
-  town: string;
-  uc_name: string;
-  fix_site: string;
-  outreach_name: string;
-  outreach_coordinates?: string;
-  area_name: string;
-  assigned_aic: string;
-  aic_contact?: string;
-  assigned_cm: string;
-  cm_contact?: string;
-  total_population: number;
-  total_under_2_years: number;
-  total_zero_dose: number;
-  total_defaulter: number;
-  total_refusal: number;
-  total_boys_under_2?: number;
-  total_girls_under_2?: number;
-  major_ethnicity?: string;
-  major_languages?: string;
-  nearest_phf?: string;
-  hf_incharge_name?: string;
-  latitude?: number;
-  longitude?: number;
-}
-
-export const areaMappingApi = {
-  list: async () => {
-    const { data } = await api.get('/area-mappings');
-    return data;
-  },
-  create: async (payload: AreaMapping) => {
-    const { data} = await api.post('/area-mappings', payload);
-    return data;
-  },
-};
-
 // Participant type for forms with participants
 export interface Participant {
   sr_no?: number;
@@ -79,34 +39,8 @@ export interface Participant {
   gender?: string;
 }
 
-// Religious Leader
-export interface ReligiousLeader extends FormMetadata {
-  id?: number;
-  date: string;
-  attached_hf: string;
-  uc: string;
-  district: string;
-  outreach: string;
-  group_type: string;
-  facilitator_tkf: string;
-  latitude?: number;
-  longitude?: number;
-  participants: Participant[];
-}
-
-export const religiousLeaderApi = {
-  list: async () => {
-    const { data } = await api.get('/religious-leaders');
-    return data;
-  },
-  create: async (payload: ReligiousLeader) => {
-    const { data } = await api.post('/religious-leaders', payload);
-    return data;
-  },
-};
-
-// Community Barrier
-export interface CommunityBarrier extends FormMetadata {
+// FGDs-Community (formerly Community Barriers)
+export interface FgdsCommunity extends FormMetadata {
   id?: number;
   date: string;
   venue: string;
@@ -123,19 +57,19 @@ export interface CommunityBarrier extends FormMetadata {
   participants: Participant[];
 }
 
-export const communityBarrierApi = {
+export const fgdsCommunityApi = {
   list: async () => {
-    const { data } = await api.get('/community-barriers');
+    const { data } = await api.get('/fgds-community');
     return data;
   },
-  create: async (payload: CommunityBarrier) => {
-    const { data } = await api.post('/community-barriers', payload);
+  create: async (payload: FgdsCommunity) => {
+    const { data } = await api.post('/fgds-community', payload);
     return data;
   },
 };
 
-// Healthcare Barrier
-export interface HealthcareBarrier extends FormMetadata {
+// FGDs-Health Workers (formerly Healthcare Barriers)
+export interface FgdsHealthWorkers extends FormMetadata {
   id?: number;
   date: string;
   hfs: string;
@@ -150,13 +84,49 @@ export interface HealthcareBarrier extends FormMetadata {
   participants: Participant[];
 }
 
-export const healthcareBarrierApi = {
+export const fgdsHealthWorkersApi = {
   list: async () => {
-    const { data } = await api.get('/healthcare-barriers');
+    const { data } = await api.get('/fgds-health-workers');
     return data;
   },
-  create: async (payload: HealthcareBarrier) => {
-    const { data } = await api.post('/healthcare-barriers', payload);
+  create: async (payload: FgdsHealthWorkers) => {
+    const { data } = await api.post('/fgds-health-workers', payload);
+    return data;
+  },
+};
+
+// Child Line List (formerly Draft Lists)
+export interface ChildLineList extends FormMetadata {
+  id?: number;
+  division: string;
+  district: string;
+  town: string;
+  uc: string;
+  outreach: string;
+  child_name: string;
+  father_name: string;
+  gender: 'male' | 'female';
+  date_of_birth: string;
+  age_in_months: number;
+  father_cnic?: string;
+  house_number?: string;
+  address: string;
+  guardian_phone?: string;
+  type: 'Zero Dose' | 'Defaulter';
+  missed_vaccines: string[];
+  reasons_of_missing: string;
+  plan_for_coverage: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export const childLineListApi = {
+  list: async () => {
+    const { data } = await api.get('/child-line-lists');
+    return data;
+  },
+  create: async (payload: ChildLineList) => {
+    const { data } = await api.post('/child-line-lists', payload);
     return data;
   },
 };
@@ -172,7 +142,7 @@ export interface BridgingTheGapParticipant {
 // IIT Team Member - reference to participant from other forms
 export interface IITTeamMember {
   participant_id: number;
-  source_type: 'community_barrier' | 'healthcare_barrier';
+  source_type: 'fgds_community' | 'fgds_health_workers';
   source_id: number;
 }
 
@@ -183,7 +153,7 @@ export interface SearchedParticipant {
   contact_no: string;
   occupation?: string;
   designation?: string;
-  source_type: 'community_barrier' | 'healthcare_barrier';
+  source_type: 'fgds_community' | 'fgds_health_workers';
   source_id: number;
   source_label: string;
 }

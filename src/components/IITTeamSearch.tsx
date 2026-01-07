@@ -108,7 +108,7 @@ export function IITTeamSearch({ uc, selectedMembers, onMembersChange }: IITTeamS
       {/* Search Section */}
       <Text style={[styles.sectionTitle, { color: colors.text }]}>Search Participants</Text>
       <Text style={[styles.hint, { color: colors.muted }]}>
-        Search by name or phone number to find participants from Community Barriers and Healthcare Barriers forms in the same UC.
+        Search by name or phone number to find participants from FGDs-Community and FGDs-Health Workers forms in the same UC.
       </Text>
 
       {!uc ? (
@@ -132,7 +132,7 @@ export function IITTeamSearch({ uc, selectedMembers, onMembersChange }: IITTeamS
           ) : hasSearched && searchResults.length === 0 ? (
             <View style={[styles.emptyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <Text style={[styles.emptyText, { color: colors.muted }]}>
-                No participants found in {uc}. Try a different search term or make sure participants have been added via Community Barriers or Healthcare Barriers forms.
+                No participants found in {uc}. Try a different search term or make sure participants have been added via FGDs-Community or FGDs-Health Workers forms.
               </Text>
             </View>
           ) : searchResults.length > 0 ? (

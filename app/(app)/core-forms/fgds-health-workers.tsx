@@ -16,14 +16,14 @@ import { useThemeColors } from '../../../src/store/themeStore';
 import { useLocation } from '../../../src/hooks/useLocation';
 import { useDeviceInfo } from '../../../src/hooks/useDeviceInfo';
 import { CascadingOutreachDropdown } from '../../../src/components/CascadingOutreachDropdown';
-import { ReligiousLeaderParticipantList } from '../../../src/components/ReligiousLeaderParticipantList';
+import { HealthcareParticipantList } from '../../../src/components/HealthcareParticipantList';
 import { FormIdBanner } from '../../../src/components/FormIdBanner';
 import { DateTimePicker } from '../../../src/components/DateTimePicker';
-import { religiousLeaderApi, ReligiousLeader, Participant, generateFormId } from '../../../src/api/coreForms';
+import { fgdsHealthWorkersApi, FgdsHealthWorkers, Participant, generateFormId } from '../../../src/api/coreForms';
 
-const GROUP_TYPES = ['Religious Leaders', 'Community Influencers', 'Both'];
+const GROUP_TYPES = ['Medics', 'Non-Medics', 'Both'];
 
-export default function ReligiousLeadersScreen() {
+export default function FgdsHealthWorkersScreen() {
   const router = useRouter();
   const { colors } = useThemeColors();
   const [loading, setLoading] = useState(false);
@@ -36,11 +36,11 @@ export default function ReligiousLeadersScreen() {
   useEffect(() => {
     const fetchFormId = async () => {
       try {
-        const id = await generateFormId('religious_leader');
+        const id = await generateFormId('fgds_health_workers');
         setFormId(id);
       } catch (error) {
         console.error('Failed to generate form ID:', error);
-        setFormId(`RL-${Date.now().toString(36).toUpperCase()}`);
+        setFormId(`FH-${Date.now().toString(36).toUpperCase()}`);
       } finally {
         setFormIdLoading(false);
       }
@@ -48,18 +48,21 @@ export default function ReligiousLeadersScreen() {
     fetchFormId();
   }, []);
 
-  const [formData, setFormData] = useState<ReligiousLeader>({
+  const [formData, setFormData] = useState<FgdsHealthWorkers>({
     date: new Date().toISOString(),
-    attached_hf: '',
+    hfs: '',
+    address: '',
     uc: '',
-    district: '',
-    outreach: '',
+    participants_males: 0,
+    participants_females: 0,
     group_type: '',
     facilitator_tkf: '',
     participants: [],
   });
 
-  const updateField = <K extends keyof ReligiousLeader>(field: K, value: ReligiousLeader[K]) => {
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+
+  const updateField = <K extends keyof FgdsHealthWorkers>(field: K, value: FgdsHealthWorkers[K]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -69,11 +72,10 @@ export default function ReligiousLeadersScreen() {
     fixSite: string;
     outreach: string;
   }) => {
+    setSelectedDistrict(values.district);
     setFormData((prev) => ({
       ...prev,
-      district: values.district,
       uc: values.unionCouncil,
-      outreach: values.outreach,
     }));
   };
 
@@ -94,11 +96,11 @@ export default function ReligiousLeadersScreen() {
 
   const handleSubmit = async () => {
     // Validation
-    if (!formData.district || !formData.uc || !formData.outreach) {
-      showWarningDialog('Validation Error', 'Please select all location fields');
+    if (!formData.uc) {
+      showWarningDialog('Validation Error', 'Please select Union Council');
       return;
     }
-    if (!formData.date || !formData.group_type || !formData.facilitator_tkf) {
+    if (!formData.date || !formData.hfs || !formData.group_type || !formData.facilitator_tkf) {
       showWarningDialog('Validation Error', 'Please fill all required fields');
       return;
     }
@@ -116,8 +118,8 @@ export default function ReligiousLeadersScreen() {
         started_at: startedAt.current,
         submitted_at: new Date().toISOString(),
       };
-      await religiousLeaderApi.create(submitData);
-      showSuccessDialog('Success', 'Religious leaders activity saved successfully', () => router.back());
+      await fgdsHealthWorkersApi.create(submitData);
+      showSuccessDialog('Success', 'FGDs-Health Workers activity saved successfully', () => router.back());
     } catch (error: any) {
       showErrorDialog(error);
     } finally {
@@ -137,12 +139,12 @@ export default function ReligiousLeadersScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="Religious Leaders Form" />
+        <FormIdBanner formId={formId} loading={formIdLoading} formTitle="FGDs-Health Workers" />
 
         <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>🕌 Religious Leaders Activity</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>FGDs-Health Workers</Text>
           <Text style={[styles.headerDesc, { color: colors.muted }]}>
-            Document engagement sessions with religious leaders for vaccination advocacy
+            Focus Group Discussions with health workers on immunization barriers
           </Text>
         </View>
 
@@ -155,16 +157,26 @@ export default function ReligiousLeadersScreen() {
           mode="datetime"
         />
 
-        <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={false} />
-
-        <Text style={[styles.label, { color: colors.text }]}>Attached Health Facility</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Health Facility/Site (HFS) *</Text>
         <TextInput
           style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Enter attached health facility"
+          placeholder="Enter health facility name"
           placeholderTextColor={colors.muted}
-          value={formData.attached_hf}
-          onChangeText={(v) => updateField('attached_hf', v)}
+          value={formData.hfs}
+          onChangeText={(v) => updateField('hfs', v)}
         />
+
+        <Text style={[styles.label, { color: colors.text }]}>Address</Text>
+        <TextInput
+          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+          placeholder="Enter facility address"
+          placeholderTextColor={colors.muted}
+          multiline
+          value={formData.address}
+          onChangeText={(v) => updateField('address', v)}
+        />
+
+        <CascadingOutreachDropdown onSelect={handleDropdownSelect} showFixSite={false} />
 
         <Text style={[styles.label, { color: colors.text }]}>Group Type *</Text>
         <View style={styles.chipRow}>
@@ -178,9 +190,38 @@ export default function ReligiousLeadersScreen() {
               ]}
               onPress={() => updateField('group_type', g)}
             >
-              <Text style={{ color: formData.group_type === g ? '#fff' : colors.text }}>{g}</Text>
+              <Text style={{ color: formData.group_type === g ? '#fff' : colors.text, fontSize: 13 }}>{g}</Text>
             </Pressable>
           ))}
+        </View>
+
+        <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>
+          Participant Count
+        </Text>
+
+        <View style={styles.row}>
+          <View style={styles.halfInput}>
+            <Text style={[styles.label, { color: colors.text }]}>Males</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+              placeholder="0"
+              placeholderTextColor={colors.muted}
+              keyboardType="numeric"
+              value={formData.participants_males.toString()}
+              onChangeText={(v) => updateField('participants_males', parseInt(v) || 0)}
+            />
+          </View>
+          <View style={styles.halfInput}>
+            <Text style={[styles.label, { color: colors.text }]}>Females</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
+              placeholder="0"
+              placeholderTextColor={colors.muted}
+              keyboardType="numeric"
+              value={formData.participants_females.toString()}
+              onChangeText={(v) => updateField('participants_females', parseInt(v) || 0)}
+            />
+          </View>
         </View>
 
         <Text style={[styles.label, { color: colors.text }]}>TKF Facilitator *</Text>
@@ -204,7 +245,7 @@ export default function ReligiousLeadersScreen() {
           {locationLoading ? (
             <ActivityIndicator color={colors.primary} />
           ) : (
-            <Text style={{ color: colors.primary }}>📍 Capture Current Location</Text>
+            <Text style={{ color: colors.primary }}>Capture Current Location</Text>
           )}
         </Pressable>
 
@@ -214,7 +255,7 @@ export default function ReligiousLeadersScreen() {
           </Text>
         )}
 
-        <ReligiousLeaderParticipantList
+        <HealthcareParticipantList
           participants={formData.participants}
           onChange={handleParticipantsChange}
         />
@@ -273,13 +314,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
   },
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  halfInput: {
+    flex: 1,
+  },
   chipRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
   chip: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 8,
     borderWidth: 1,
