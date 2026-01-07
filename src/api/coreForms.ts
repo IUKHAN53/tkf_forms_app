@@ -1,7 +1,7 @@
 import { api } from './client';
 
 // Generate unique form ID
-export type FormType = 'area_mapping' | 'draft_list' | 'religious_leader' | 'community_barrier' | 'healthcare_barrier';
+export type FormType = 'area_mapping' | 'draft_list' | 'religious_leader' | 'community_barrier' | 'healthcare_barrier' | 'bridging_the_gap';
 
 export const generateFormId = async (formType: FormType): Promise<string> => {
   const { data } = await api.post('/form-id/generate', { form_type: formType });
@@ -158,5 +158,67 @@ export const healthcareBarrierApi = {
   create: async (payload: HealthcareBarrier) => {
     const { data } = await api.post('/healthcare-barriers', payload);
     return data;
+  },
+};
+
+// Bridging The Gap - Attendance Participant (simpler than other participants)
+export interface BridgingTheGapParticipant {
+  sr_no?: number;
+  name: string;
+  occupation: string;
+  contact_no: string;
+}
+
+// IIT Team Member - reference to participant from other forms
+export interface IITTeamMember {
+  participant_id: number;
+  source_type: 'community_barrier' | 'healthcare_barrier';
+  source_id: number;
+}
+
+// Searched participant from other forms
+export interface SearchedParticipant {
+  id: number;
+  name: string;
+  contact_no: string;
+  occupation?: string;
+  designation?: string;
+  source_type: 'community_barrier' | 'healthcare_barrier';
+  source_id: number;
+  source_label: string;
+}
+
+// Bridging The Gap
+export interface BridgingTheGap extends FormMetadata {
+  id?: number;
+  date: string;
+  venue: string;
+  district: string;
+  uc: string;
+  fix_site: string;
+  participants_males: number;
+  participants_females: number;
+  latitude?: number;
+  longitude?: number;
+  participants: BridgingTheGapParticipant[];
+  team_members: IITTeamMember[];
+}
+
+export const bridgingTheGapApi = {
+  list: async () => {
+    const { data } = await api.get('/bridging-the-gap');
+    return data;
+  },
+  create: async (payload: BridgingTheGap) => {
+    const { data } = await api.post('/bridging-the-gap', payload);
+    return data;
+  },
+  searchParticipants: async (uc: string, search?: string) => {
+    const params = new URLSearchParams({ uc });
+    if (search) {
+      params.append('search', search);
+    }
+    const { data } = await api.get(`/bridging-the-gap/search-participants?${params}`);
+    return data as { data: SearchedParticipant[]; total: number };
   },
 };

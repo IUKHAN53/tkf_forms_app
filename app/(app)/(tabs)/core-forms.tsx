@@ -49,6 +49,14 @@ const CORE_FORMS = [
     colors: ['#14b8a6', '#0d9488'] as [string, string],
     route: '/core-forms/healthcare-barriers',
   },
+  {
+    id: 'bridging-the-gap',
+    title: 'Bridging The Gap',
+    description: 'Build Immunization Improvement Teams from community participants',
+    icon: '🌉',
+    colors: ['#3b82f6', '#1d4ed8'] as [string, string],
+    route: '/core-forms/bridging-the-gap',
+  },
 ];
 
 type FormCardProps = {
