@@ -6,7 +6,7 @@ export default ({ config }) => {
     ...config,
     name: "Community Led Engagement",
     slug: "community-led-engagement",
-    version: "1.0.0",
+    version: "1.2.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "communityengagement",
@@ -14,7 +14,8 @@ export default ({ config }) => {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.iukhan.communityledengagement",
+      bundleIdentifier: "org.tameerekhalaq.clm.epi",
+      buildNumber: "3",
     },
     android: {
       adaptiveIcon: {
@@ -25,11 +26,17 @@ export default ({ config }) => {
       },
       edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
-      package: "com.iukhan.communityledengagement",
+      package: "org.tameerekhalaq.clm.epi",
+      versionCode: 3,
     },
     web: {
       output: "static",
       favicon: "./assets/images/favicon.png",
+    },
+    splash: {
+      image: "./assets/images/splash-icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#1e3a5f",
     },
     plugins: [
       "expo-router",
@@ -44,6 +51,19 @@ export default ({ config }) => {
             backgroundColor: "#0f2540",
             image: "./assets/images/splash-icon.png",
           },
+        },
+      ],
+      [
+        "expo-image-picker",
+        {
+          photosPermission: "Allow $(PRODUCT_NAME) to access your photos for form submissions.",
+          cameraPermission: "Allow $(PRODUCT_NAME) to access your camera for capturing images.",
+        },
+      ],
+      [
+        "expo-location",
+        {
+          locationAlwaysAndWhenInUsePermission: "Allow $(PRODUCT_NAME) to use your location for form submissions.",
         },
       ],
       "expo-sqlite",

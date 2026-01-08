@@ -62,7 +62,6 @@ export default function ChildLineListScreen() {
     gender: 'male',
     date_of_birth: new Date().toISOString(),
     age_in_months: 0,
-    father_cnic: '',
     house_number: '',
     address: '',
     guardian_phone: '',
@@ -265,15 +264,6 @@ export default function ChildLineListScreen() {
           keyboardType="numeric"
           value={formData.age_in_months.toString()}
           onChangeText={(v) => updateField('age_in_months', parseInt(v) || 0)}
-        />
-
-        <Text style={[styles.label, { color: colors.text }]}>Father's CNIC / B-Form</Text>
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-          placeholder="Enter CNIC or B-Form number"
-          placeholderTextColor={colors.muted}
-          value={formData.father_cnic}
-          onChangeText={(v) => updateField('father_cnic', v)}
         />
 
         <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>Address Details</Text>

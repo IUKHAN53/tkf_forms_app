@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Modal, Keyboard
 import { useThemeColors } from '../store/themeStore';
 import { Participant } from '../api/coreForms';
 import { PhoneInput } from './PhoneInput';
-import { CNICInput } from './CNICInput';
 
 interface ParticipantListProps {
   participants: Participant[];
@@ -15,7 +14,6 @@ const emptyParticipant: Participant = {
   occupation: '',
   address: '',
   contact_no: '',
-  cnic: '',
   gender: 'Male', // Default to Male
 };
 
@@ -159,14 +157,6 @@ export function ParticipantList({ participants, onChange }: ParticipantListProps
                 placeholderTextColor={colors.muted}
                 value={currentParticipant.contact_no || ''}
                 onChangeText={(v) => updateField('contact_no', v)}
-              />
-
-              <Text style={[styles.label, { color: colors.text }]}>CNIC</Text>
-              <CNICInput
-                style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-                placeholderTextColor={colors.muted}
-                value={currentParticipant.cnic || ''}
-                onChangeText={(v) => updateField('cnic', v)}
               />
 
               <Text style={[styles.label, { color: colors.text }]}>Gender</Text>
