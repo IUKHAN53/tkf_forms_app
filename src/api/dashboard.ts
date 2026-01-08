@@ -19,11 +19,10 @@ export interface RecentActivity {
 }
 
 export interface FormTotals {
-  area_mappings: number;
-  draft_lists: number;
-  religious_leaders: number;
-  community_barriers: number;
-  healthcare_barriers: number;
+  child_line_lists: number;
+  fgds_community: number;
+  fgds_health_workers: number;
+  bridging_the_gap: number;
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {

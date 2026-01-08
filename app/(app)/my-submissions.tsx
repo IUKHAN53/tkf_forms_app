@@ -48,11 +48,10 @@ export default function MySubmissionsScreen() {
   }, [refetch]);
 
   const totals = stats?.totals ?? {
-    area_mappings: 0,
-    draft_lists: 0,
-    religious_leaders: 0,
-    community_barriers: 0,
-    healthcare_barriers: 0,
+    child_line_lists: 0,
+    fgds_community: 0,
+    fgds_health_workers: 0,
+    bridging_the_gap: 0,
   };
 
   const totalSubmissions = Object.values(totals).reduce((sum, val) => sum + val, 0);
@@ -96,34 +95,28 @@ export default function MySubmissionsScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Submissions by Form Type</Text>
 
             <SubmissionCard
-              title="Area Mappings"
-              count={totals.area_mappings}
-              icon="🗺️"
+              title="Child Line Lists"
+              count={totals.child_line_lists}
+              icon="👶"
               colors={['#6366f1', '#8b5cf6']}
             />
             <SubmissionCard
-              title="Draft Lists"
-              count={totals.draft_lists}
-              icon="📋"
+              title="FGDs Community"
+              count={totals.fgds_community}
+              icon="👥"
               colors={['#22c55e', '#16a34a']}
             />
             <SubmissionCard
-              title="Religious Leaders"
-              count={totals.religious_leaders}
-              icon="🕌"
+              title="FGDs Health Workers"
+              count={totals.fgds_health_workers}
+              icon="🏥"
               colors={['#f59e0b', '#d97706']}
             />
             <SubmissionCard
-              title="Community Barriers"
-              count={totals.community_barriers}
-              icon="👥"
+              title="Bridging The Gap"
+              count={totals.bridging_the_gap}
+              icon="🌉"
               colors={['#ec4899', '#db2777']}
-            />
-            <SubmissionCard
-              title="Healthcare Barriers"
-              count={totals.healthcare_barriers}
-              icon="🏥"
-              colors={['#14b8a6', '#0d9488']}
             />
           </>
         )}
