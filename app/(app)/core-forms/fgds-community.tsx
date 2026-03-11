@@ -87,7 +87,9 @@ export default function FgdsCommunityScreen() {
   };
 
   const handleParticipantsChange = (participants: Participant[]) => {
-    setFormData((prev) => ({ ...prev, participants }));
+    const males = participants.filter((p) => p.gender === 'Male').length;
+    const females = participants.filter((p) => p.gender === 'Female').length;
+    setFormData((prev) => ({ ...prev, participants, participants_males: males, participants_females: females }));
   };
 
   const handleGetLocation = async () => {
@@ -246,31 +248,17 @@ export default function FgdsCommunityScreen() {
         </View>
 
         <Text style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}>
-          Participant Count
+          Participant Count (auto-calculated)
         </Text>
 
         <View style={styles.row}>
-          <View style={styles.halfInput}>
-            <Text style={[styles.label, { color: colors.text }]}>Males</Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={formData.participants_males.toString()}
-              onChangeText={(v) => updateField('participants_males', parseInt(v) || 0)}
-            />
+          <View style={[styles.halfInput, styles.countDisplay, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.countLabel, { color: colors.muted }]}>Males</Text>
+            <Text style={[styles.countValue, { color: colors.text }]}>{formData.participants_males}</Text>
           </View>
-          <View style={styles.halfInput}>
-            <Text style={[styles.label, { color: colors.text }]}>Females</Text>
-            <TextInput
-              style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
-              placeholder="0"
-              placeholderTextColor={colors.muted}
-              keyboardType="numeric"
-              value={formData.participants_females.toString()}
-              onChangeText={(v) => updateField('participants_females', parseInt(v) || 0)}
-            />
+          <View style={[styles.halfInput, styles.countDisplay, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <Text style={[styles.countLabel, { color: colors.muted }]}>Females</Text>
+            <Text style={[styles.countValue, { color: colors.text }]}>{formData.participants_females}</Text>
           </View>
         </View>
 
@@ -405,6 +393,20 @@ const styles = StyleSheet.create({
   },
   halfInput: {
     flex: 1,
+  },
+  countDisplay: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  countLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  countValue: {
+    fontSize: 20,
+    fontWeight: '700',
   },
   chipRow: {
     flexDirection: 'row',
