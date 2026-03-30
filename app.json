@@ -2,7 +2,7 @@
   "expo": {
     "name": "Community Led Engagement",
     "slug": "community-led-engagement",
-    "version": "1.2.0",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "community-led-engagement",
