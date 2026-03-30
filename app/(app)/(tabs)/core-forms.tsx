@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDashboardStats } from '../../../src/hooks/useDashboardStats';
@@ -21,7 +22,7 @@ const CORE_FORMS = [
     id: 'child-line-list',
     title: 'Child Line List',
     description: 'Record zero dose and defaulter children for follow-up',
-    icon: '👶',
+    icon: 'child-care' as keyof typeof MaterialIcons.glyphMap,
     colors: ['#6366f1', '#8b5cf6'] as [string, string],
     route: '/core-forms/child-line-list',
   },
@@ -29,7 +30,7 @@ const CORE_FORMS = [
     id: 'fgds-community',
     title: 'FGDs-Community',
     description: 'Focus Group Discussions with community members on immunization barriers',
-    icon: '👥',
+    icon: 'groups' as keyof typeof MaterialIcons.glyphMap,
     colors: ['#ec4899', '#db2777'] as [string, string],
     route: '/core-forms/fgds-community',
   },
@@ -37,7 +38,7 @@ const CORE_FORMS = [
     id: 'fgds-health-workers',
     title: 'FGDs-Health Workers',
     description: 'Focus Group Discussions with health workers on immunization barriers',
-    icon: '🏥',
+    icon: 'local-hospital' as keyof typeof MaterialIcons.glyphMap,
     colors: ['#14b8a6', '#0d9488'] as [string, string],
     route: '/core-forms/fgds-health-workers',
   },
@@ -45,7 +46,7 @@ const CORE_FORMS = [
     id: 'bridging-the-gap',
     title: 'Bridging The Gap',
     description: 'Build Immunization Improvement Teams from community participants',
-    icon: '🌉',
+    icon: 'compare-arrows' as keyof typeof MaterialIcons.glyphMap,
     colors: ['#3b82f6', '#1d4ed8'] as [string, string],
     route: '/core-forms/bridging-the-gap',
   },
@@ -54,7 +55,7 @@ const CORE_FORMS = [
 type FormCardProps = {
   title: string;
   description: string;
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   colors: [string, string];
   onPress: () => void;
 };
@@ -71,7 +72,7 @@ function FormCard({ title, description, icon, colors, onPress }: FormCardProps) 
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <Text style={styles.cardIconText}>{icon}</Text>
+          <MaterialIcons name={icon} size={28} color="#fff" />
         </LinearGradient>
         <View style={styles.cardContent}>
           <Text style={[styles.cardTitle, { color: themeColors.text }]}>{title}</Text>

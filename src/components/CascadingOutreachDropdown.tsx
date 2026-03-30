@@ -178,24 +178,11 @@ export function CascadingOutreachDropdown({ onSelect, showFixSite = true }: Casc
     return { data, title };
   };
 
-  const handleAddNewSite = async () => {
-    try {
-      setLoading(true);
-      await outreachSiteApi.create({
-        district: selectedDistrict,
-        union_council: selectedUC,
-        fix_site: selectedFixSite || newSite.fix_site || '',
-        outreach_site: newSite.outreach_site || '',
-        coordinates: null,
-      });
-      // Reload outreach sites
-      await loadOutreachSites(selectedDistrict, selectedUC, selectedFixSite);
+  const handleAddNewSite = () => {
+    if (newSite.outreach_site) {
+      setSelectedOutreach(newSite.outreach_site);
       setNewSite({});
       setModalVisible(false);
-    } catch (error) {
-      console.error('Error creating outreach site:', error);
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useUserStore } from '../../../src/store/userStore';
 import { useOfflineQueueStore } from '../../../src/store/offlineQueueStore';
@@ -30,16 +31,16 @@ const COLORS = {
 };
 
 const GRADIENT_CARDS = [
-  { colors: ['#6366f1', '#8b5cf6'], icon: '📋', label: 'Core Forms', route: '/core-forms' },
-  { colors: ['#22c55e', '#16a34a'], icon: '📝', label: 'Dynamic Forms', route: '/dynamic-forms' },
-  { colors: ['#f59e0b', '#d97706'], icon: '📊', label: 'My Submissions', route: '/my-submissions' },
-  { colors: ['#ec4899', '#db2777'], icon: '⚙️', label: 'Settings', route: '/settings' },
+  { colors: ['#6366f1', '#8b5cf6'], icon: 'assignment' as const, label: 'Core Forms', route: '/core-forms' },
+  { colors: ['#22c55e', '#16a34a'], icon: 'description' as const, label: 'Dynamic Forms', route: '/dynamic-forms' },
+  { colors: ['#f59e0b', '#d97706'], icon: 'bar-chart' as const, label: 'My Submissions', route: '/my-submissions' },
+  { colors: ['#ec4899', '#db2777'], icon: 'settings' as const, label: 'Settings', route: '/settings' },
 ];
 
 type StatCardProps = {
   title: string;
   value: string | number;
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   color: string;
   subtitle?: string;
 };
@@ -50,7 +51,7 @@ function StatCard({ title, value, icon, color, subtitle }: StatCardProps) {
   return (
     <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
-        <Text style={styles.statIcon}>{icon}</Text>
+        <MaterialIcons name={icon} size={24} color={color} />
       </View>
       <View style={styles.statContent}>
         <Text style={[styles.statValue, { color: colors.text }]}>{value}</Text>
@@ -63,7 +64,7 @@ function StatCard({ title, value, icon, color, subtitle }: StatCardProps) {
 
 type QuickActionProps = {
   colors: readonly [string, string, ...string[]];
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
   onPress: () => void;
 };
@@ -72,7 +73,7 @@ function QuickAction({ colors: gradientColors, icon, label, onPress }: QuickActi
   return (
     <Pressable onPress={onPress} style={styles.quickAction}>
       <LinearGradient colors={gradientColors} style={styles.quickActionGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        <Text style={styles.quickActionIcon}>{icon}</Text>
+        <MaterialIcons name={icon} size={28} color="#fff" style={{ marginBottom: 8 }} />
         <Text style={styles.quickActionLabel}>{label}</Text>
       </LinearGradient>
     </Pressable>
@@ -156,36 +157,43 @@ export default function HomeScreen() {
             <Text style={styles.userName}>{user?.name || 'User'}</Text>
           </View>
           <Pressable onPress={clearSession} style={styles.logoutBtn}>
-            <Text style={styles.logoutIcon}>👋</Text>
+            <MaterialIcons name="logout" size={24} color="#fff" />
           </Pressable>
         </View>
 
         {/* Sync Status */}
         {(queueCount > 0 || syncStatus !== 'idle') && (
           <View style={styles.syncBanner}>
-            <Text style={styles.syncText}>
-              {syncStatus === 'syncing'
-                ? '🔄 Syncing...'
-                : syncStatus === 'error'
-                ? '⚠️ Sync paused'
-                : `📤 ${queueCount} pending`}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+              <MaterialIcons
+                name={syncStatus === 'syncing' ? 'sync' : syncStatus === 'error' ? 'warning' : 'cloud-upload'}
+                size={18}
+                color="#fff"
+              />
+              <Text style={styles.syncText}>
+                {syncStatus === 'syncing'
+                  ? 'Syncing...'
+                  : syncStatus === 'error'
+                  ? 'Sync paused'
+                  : `${queueCount} pending`}
+              </Text>
+            </View>
           </View>
         )}
       </LinearGradient>
 
       {/* Stats Grid */}
       <View style={styles.statsGrid}>
-        <StatCard title="Total Submissions" value={totalSubmissions} icon="📋" color={COLORS.primary} />
-        <StatCard title="Pending Sync" value={queueCount} icon="📤" color={COLORS.warning} />
+        <StatCard title="Total Submissions" value={totalSubmissions} icon="assignment" color={COLORS.primary} />
+        <StatCard title="Pending Sync" value={queueCount} icon="cloud-upload" color={COLORS.warning} />
         <StatCard
           title="Today"
           value={todayCount}
-          icon="📊"
+          icon="bar-chart"
           color={COLORS.success}
           subtitle={percentChange !== 0 ? `${percentChange > 0 ? '+' : ''}${percentChange}% from yesterday` : undefined}
         />
-        <StatCard title="This Week" value={thisWeekTotal} icon="📈" color={COLORS.info} />
+        <StatCard title="This Week" value={thisWeekTotal} icon="trending-up" color={COLORS.info} />
       </View>
 
       {/* Weekly Activity Chart */}

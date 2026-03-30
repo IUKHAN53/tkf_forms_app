@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0f14;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d1a22;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1ec8dc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f9aad;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tealGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0d8899;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1ec8dc;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#1ec8dc" flood-opacity="0.3"/>
+    </filter>
+    <!-- Rounded rect clip for icon shape -->
+    <clipPath id="iconClip">
+      <rect width="512" height="512" rx="110" ry="110"/>
+    </clipPath>
+  </defs>
+
+  <!-- App icon background -->
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#bgGrad)"/>
+
+  <!-- Subtle background ring -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#1ec8dc" stroke-width="1" opacity="0.08"/>
+  <circle cx="256" cy="256" r="175" fill="none" stroke="#1ec8dc" stroke-width="1" opacity="0.05"/>
+
+  <!-- TKF base arc (smile shape) — thick bottom arc -->
+  <path d="M 108 230 A 158 158 0 0 0 404 230"
+        fill="none"
+        stroke="url(#tealGrad)"
+        stroke-width="44"
+        stroke-linecap="round"
+        filter="url(#softShadow)"/>
+
+  <!-- Head / person circle — central dot from TKF -->
+  <circle cx="256" cy="185" r="52" fill="url(#tealGrad)" filter="url(#softShadow)"/>
+
+  <!-- Shield overlay on person circle — vaccination symbol -->
+  <path d="M 256 162 L 272 170 L 272 190 Q 272 205 256 212 Q 240 205 240 190 L 240 170 Z"
+        fill="#0a0f14" opacity="0.7"/>
+  <!-- Shield cross (medical cross) -->
+  <rect x="250" y="176" width="12" height="28" rx="2" fill="white" opacity="0.9"/>
+  <rect x="244" y="182" width="24" height="12" rx="2" fill="white" opacity="0.9"/>
+
+  <!-- Small community people dots on the arc ends -->
+  <!-- Left person -->
+  <circle cx="122" cy="210" r="14" fill="url(#tealGrad2)" opacity="0.85"/>
+  <!-- Right person -->
+  <circle cx="390" cy="210" r="14" fill="url(#tealGrad2)" opacity="0.85"/>
+
+  <!-- Connecting dots along arc (volunteers) -->
+  <circle cx="175" cy="175" r="7" fill="#1ec8dc" opacity="0.6"/>
+  <circle cx="337" cy="175" r="7" fill="#1ec8dc" opacity="0.6"/>
+
+  <!-- CLM text label -->
+  <text x="256" y="355"
+        font-family="'Arial Black', 'Arial', sans-serif"
+        font-size="58"
+        font-weight="900"
+        fill="#ffffff"
+        text-anchor="middle"
+        letter-spacing="10">CLM</text>
+
+  <!-- Tagline line 1 -->
+  <text x="256" y="383"
+        font-family="Arial, sans-serif"
+        font-size="16"
+        font-weight="400"
+        fill="#1ec8dc"
+        text-anchor="middle"
+        letter-spacing="3.5"
+        opacity="0.7">COMMUNITY LED</text>
+
+  <!-- Tagline line 2 -->
+  <text x="256" y="402"
+        font-family="Arial, sans-serif"
+        font-size="16"
+        font-weight="400"
+        fill="#1ec8dc"
+        text-anchor="middle"
+        letter-spacing="3.5"
+        opacity="0.7">MONITORING</text>
+
+  <!-- Bottom subtle accent line -->
+  <line x1="160" y1="418" x2="352" y2="418" stroke="#1ec8dc" stroke-width="1.5" opacity="0.3" stroke-linecap="round"/>
+</svg>

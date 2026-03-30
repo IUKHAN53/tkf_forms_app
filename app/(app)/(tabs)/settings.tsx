@@ -12,6 +12,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Application from 'expo-application';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors, useThemeStore } from '../../../src/store/themeStore';
 import { useUserStore } from '../../../src/store/userStore';
 import { useOfflineQueueStore } from '../../../src/store/offlineQueueStore';
@@ -20,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { showErrorDialog, showSuccessDialog, showConfirmDialog } from '../../../src/utils/errorDialogs';
 
 type SettingsItemProps = {
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   title: string;
   subtitle?: string;
   onPress?: () => void;
@@ -38,7 +39,7 @@ function SettingsItem({ icon, title, subtitle, onPress, trailing, danger }: Sett
       disabled={!onPress && !trailing}
     >
       <View style={[styles.settingsIcon, { backgroundColor: danger ? '#ef444420' : colors.primary + '20' }]}>
-        <Text style={styles.settingsIconText}>{icon}</Text>
+        <MaterialIcons name={icon} size={22} color={danger ? '#ef4444' : colors.primary} />
       </View>
       <View style={styles.settingsContent}>
         <Text style={[styles.settingsTitle, { color: danger ? '#ef4444' : colors.text }]}>{title}</Text>
@@ -138,13 +139,13 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionHeader, { color: colors.muted }]}>ACCOUNT</Text>
         <View style={styles.settingsGroup}>
           <SettingsItem
-            icon="👤"
+            icon="person"
             title="Profile"
             subtitle="View and edit your profile"
             onPress={() => router.push('/(app)/profile')}
           />
           <SettingsItem
-            icon="🔐"
+            icon="lock"
             title="Change Password"
             subtitle="Update your password"
             onPress={() => router.push('/(app)/change-password')}
@@ -155,7 +156,7 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionHeader, { color: colors.muted }]}>APPEARANCE</Text>
         <View style={styles.settingsGroup}>
           <SettingsItem
-            icon={scheme === 'dark' ? '🌙' : '☀️'}
+            icon={scheme === 'dark' ? 'dark-mode' : 'light-mode'}
             title="Dark Mode"
             subtitle={scheme === 'dark' ? 'Currently enabled' : 'Currently disabled'}
             trailing={
@@ -173,17 +174,17 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionHeader, { color: colors.muted }]}>SYNC & DATA</Text>
         <View style={styles.settingsGroup}>
           <SettingsItem
-            icon="📤"
+            icon="cloud-upload"
             title="Pending Submissions"
             subtitle={queueCount > 0 ? `${queueCount} items waiting to sync` : 'All synced'}
           />
           <SettingsItem
-            icon="🔄"
+            icon="sync"
             title="Last Sync"
             subtitle={lastSyncAt ? new Date(lastSyncAt).toLocaleString() : 'Never'}
           />
           <SettingsItem
-            icon="🗑️"
+            icon="delete"
             title="Clear Local Data"
             subtitle="Remove cached data"
             onPress={handleClearData}
@@ -194,20 +195,20 @@ export default function SettingsScreen() {
         <Text style={[styles.sectionHeader, { color: colors.muted }]}>SUPPORT</Text>
         <View style={styles.settingsGroup}>
           <SettingsItem
-            icon="📧"
+            icon="email"
             title="Send Logs"
             subtitle="Send diagnostic logs to support"
             onPress={handleSendLogs}
             trailing={sendingLogs ? <ActivityIndicator size="small" color={colors.primary} /> : undefined}
           />
           <SettingsItem
-            icon="❓"
+            icon="help"
             title="Help & FAQ"
             subtitle="Get help and answers"
             onPress={() => router.push('/(app)/help-faq')}
           />
           <SettingsItem
-            icon="📞"
+            icon="phone"
             title="Contact Support"
             subtitle="Reach out to our team"
             onPress={() => router.push('/(app)/contact-support')}
@@ -217,12 +218,12 @@ export default function SettingsScreen() {
         {/* About Section */}
         <Text style={[styles.sectionHeader, { color: colors.muted }]}>ABOUT</Text>
         <View style={styles.settingsGroup}>
-          <SettingsItem icon="📱" title="App Version" subtitle={`${appVersion} (${buildNumber})`} />
+          <SettingsItem icon="phone-android" title="App Version" subtitle={`${appVersion} (${buildNumber})`} />
         </View>
 
         {/* Logout */}
         <View style={[styles.settingsGroup, { marginTop: 20 }]}>
-          <SettingsItem icon="👋" title="Logout" subtitle="Sign out of your account" onPress={handleLogout} danger />
+          <SettingsItem icon="logout" title="Logout" subtitle="Sign out of your account" onPress={handleLogout} danger />
         </View>
 
         <View style={{ height: 100 }} />

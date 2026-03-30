@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../src/store/themeStore';
 import { useDashboardStats } from '../../src/hooks/useDashboardStats';
 
 type SubmissionCardProps = {
   title: string;
   count: number;
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   colors: [string, string];
 };
 
@@ -26,7 +27,7 @@ function SubmissionCard({ title, count, icon, colors }: SubmissionCardProps) {
   return (
     <View style={[styles.card, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
       <LinearGradient colors={colors} style={styles.cardIcon} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-        <Text style={styles.cardIconText}>{icon}</Text>
+        <MaterialIcons name={icon} size={28} color="#fff" />
       </LinearGradient>
       <View style={styles.cardContent}>
         <Text style={[styles.cardTitle, { color: themeColors.text }]}>{title}</Text>
@@ -84,9 +85,9 @@ export default function MySubmissionsScreen() {
           </View>
         ) : error ? (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorIcon}>⚠️</Text>
+            <MaterialIcons name="warning" size={48} color="#f59e0b" style={{ marginBottom: 12 }} />
             <Text style={[styles.errorText, { color: colors.text }]}>Failed to load submissions</Text>
-            <Pressable style={[styles.retryBtn, { backgroundColor: colors.primary }]} onPress={refetch}>
+            <Pressable style={[styles.retryBtn, { backgroundColor: colors.primary }]} onPress={() => refetch()}>
               <Text style={styles.retryText}>Retry</Text>
             </Pressable>
           </View>
@@ -97,25 +98,25 @@ export default function MySubmissionsScreen() {
             <SubmissionCard
               title="Child Line Lists"
               count={totals.child_line_lists}
-              icon="👶"
+              icon="child-care"
               colors={['#6366f1', '#8b5cf6']}
             />
             <SubmissionCard
               title="FGDs Community"
               count={totals.fgds_community}
-              icon="👥"
+              icon="groups"
               colors={['#22c55e', '#16a34a']}
             />
             <SubmissionCard
               title="FGDs Health Workers"
               count={totals.fgds_health_workers}
-              icon="🏥"
+              icon="local-hospital"
               colors={['#f59e0b', '#d97706']}
             />
             <SubmissionCard
               title="Bridging The Gap"
               count={totals.bridging_the_gap}
-              icon="🌉"
+              icon="compare-arrows"
               colors={['#ec4899', '#db2777']}
             />
           </>

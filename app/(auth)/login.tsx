@@ -52,20 +52,25 @@ export default function LoginScreen() {
       >
       {/* Header with Logos */}
       <View style={styles.logoSection}>
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.clmLogo}
+          resizeMode="contain"
+        />
         <View style={styles.logoRow}>
-          <Image 
-            source={require('../../assets/images/govt-logo.png')} 
-            style={styles.logo} 
+          <Image
+            source={require('../../assets/images/govt-logo.png')}
+            style={styles.logo}
             resizeMode="contain"
           />
-          <Image 
-            source={require('../../assets/images/epi-logo.png')} 
-            style={styles.logoLarge} 
+          <Image
+            source={require('../../assets/images/epi-logo.png')}
+            style={styles.logo}
             resizeMode="contain"
           />
-          <Image 
-            source={require('../../assets/images/logo.png')} 
-            style={styles.logo} 
+          <Image
+            source={require('../../assets/images/logo.png')}
+            style={styles.logo}
             resizeMode="contain"
           />
         </View>
@@ -158,13 +163,15 @@ const styles = StyleSheet.create({
     gap: 16,
     marginBottom: 24,
   },
-  logo: {
-    width: 60,
-    height: 60,
+  clmLogo: {
+    width: 120,
+    height: 120,
+    borderRadius: 24,
+    marginBottom: 16,
   },
-  logoLarge: {
-    width: 80,
-    height: 80,
+  logo: {
+    width: 50,
+    height: 50,
   },
   appTitle: {
     fontSize: 24,

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../src/store/themeStore';
 import { useForms } from '../../../src/hooks/useForms';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,7 +26,10 @@ const FORM_COLORS = [
   ['#ef4444', '#dc2626'],
 ] as const;
 
-const FORM_ICONS = ['📋', '📝', '📊', '📑', '📄', '🗂️', '📃', '📜'];
+const FORM_ICONS: (keyof typeof MaterialIcons.glyphMap)[] = [
+  'assignment', 'description', 'bar-chart', 'list-alt',
+  'article', 'folder', 'note', 'receipt-long',
+];
 
 export default function DynamicFormsScreen() {
   const router = useRouter();
@@ -93,7 +97,7 @@ export default function DynamicFormsScreen() {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                   >
-                    <Text style={styles.cardIconText}>{FORM_ICONS[index % FORM_ICONS.length]}</Text>
+                    <MaterialIcons name={FORM_ICONS[index % FORM_ICONS.length]} size={28} color="#fff" />
                   </LinearGradient>
                   <View style={styles.cardContent}>
                     <Text style={[styles.cardTitle, { color: colors.text }]}>{form.name}</Text>
@@ -125,7 +129,7 @@ export default function DynamicFormsScreen() {
           </>
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>📭</Text>
+            <MaterialIcons name="inbox" size={60} color="#9ca3af" style={{ marginBottom: 16 }} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>No Forms Available</Text>
             <Text style={[styles.emptyDescription, { color: colors.muted }]}>
               Dynamic forms will appear here once they are created by administrators.

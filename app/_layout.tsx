@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Slot, useRouter, useSegments } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -41,6 +42,7 @@ function useProtectedRoute(isAuthenticated: boolean) {
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const token = useUserStore((s) => s.token);
+  const hasHydrated = useUserStore((s) => s._hasHydrated);
   const loadQueue = useOfflineQueueStore((s) => s.loadQueue);
   const isAuthenticated = !!token;
 
@@ -61,7 +63,15 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [loadQueue]);
 
   useOfflineSync(isAuthenticated);
-  useProtectedRoute(isAuthenticated);
+  useProtectedRoute(hasHydrated ? isAuthenticated : false);
+
+  if (!hasHydrated) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return <>{children}</>;
 }

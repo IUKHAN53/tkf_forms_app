@@ -10,10 +10,11 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../src/store/themeStore';
 
 type ContactItemProps = {
-  icon: string;
+  icon: keyof typeof MaterialIcons.glyphMap;
   title: string;
   subtitle: string;
   value: string;
@@ -29,7 +30,7 @@ function ContactItem({ icon, title, subtitle, value, onPress }: ContactItemProps
       style={[styles.contactItem, { backgroundColor: colors.card, borderColor: colors.border }]}
     >
       <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-        <Text style={styles.icon}>{icon}</Text>
+        <MaterialIcons name={icon} size={24} color={colors.primary} />
       </View>
       <View style={styles.contactContent}>
         <Text style={[styles.contactTitle, { color: colors.text }]}>{title}</Text>
@@ -77,7 +78,7 @@ export default function ContactSupportScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Introduction */}
         <View style={styles.introSection}>
-          <Text style={styles.introIcon}>📞</Text>
+          <MaterialIcons name="support-agent" size={48} color="#6366f1" style={{ marginBottom: 16 }} />
           <Text style={[styles.introTitle, { color: colors.text }]}>Get in Touch</Text>
           <Text style={[styles.introSubtitle, { color: colors.muted }]}>
             We're here to help! Choose your preferred way to reach us.
@@ -87,7 +88,7 @@ export default function ContactSupportScreen() {
         {/* Contact Options */}
         <View style={styles.contactList}>
           <ContactItem
-            icon="📧"
+            icon="email"
             title="Email"
             subtitle="Send us an email"
             value="iu.khan53@gmail.com"
@@ -95,7 +96,7 @@ export default function ContactSupportScreen() {
           />
 
           <ContactItem
-            icon="💬"
+            icon="chat"
             title="WhatsApp"
             subtitle="Chat with us on WhatsApp"
             value="+92 301 3441991"
@@ -103,7 +104,7 @@ export default function ContactSupportScreen() {
           />
 
           <ContactItem
-            icon="🌐"
+            icon="language"
             title="Website"
             subtitle="Visit our website"
             value="www.iukhan.tech"
@@ -113,7 +114,7 @@ export default function ContactSupportScreen() {
 
         {/* Response Time */}
         <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={styles.infoIcon}>⏱️</Text>
+          <MaterialIcons name="schedule" size={32} color="#6366f1" style={{ marginBottom: 10 }} />
           <Text style={[styles.infoTitle, { color: colors.text }]}>Response Time</Text>
           <Text style={[styles.infoText, { color: colors.muted }]}>
             We typically respond within 24-48 hours during business days. For urgent matters, please use WhatsApp for faster response.
@@ -122,7 +123,7 @@ export default function ContactSupportScreen() {
 
         {/* Office Hours */}
         <View style={[styles.infoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <Text style={styles.infoIcon}>🕐</Text>
+          <MaterialIcons name="access-time" size={32} color="#6366f1" style={{ marginBottom: 10 }} />
           <Text style={[styles.infoTitle, { color: colors.text }]}>Office Hours</Text>
           <Text style={[styles.infoText, { color: colors.muted }]}>
             Monday - Friday: 9:00 AM - 6:00 PM (PKT){'\n'}

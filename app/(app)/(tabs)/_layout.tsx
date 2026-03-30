@@ -1,18 +1,19 @@
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeColors } from '../../../src/store/themeStore';
 
-function TabIcon({ name, focused, color }: { name: string; focused: boolean; color: string }) {
-  const icons: Record<string, string> = {
-    home: '🏠',
-    'core-forms': '📋',
-    forms: '📝',
-    settings: '⚙️',
-  };
+const TAB_ICONS: Record<string, keyof typeof MaterialIcons.glyphMap> = {
+  home: 'home',
+  'core-forms': 'assignment',
+  forms: 'description',
+  settings: 'settings',
+};
 
+function TabIcon({ name, focused, color }: { name: string; focused: boolean; color: string }) {
   return (
     <View style={[styles.iconContainer, focused && styles.iconFocused]}>
-      <Text style={[styles.icon, { opacity: focused ? 1 : 0.6 }]}>{icons[name] || '📄'}</Text>
+      <MaterialIcons name={TAB_ICONS[name] || 'article'} size={24} color={color} />
     </View>
   );
 }
@@ -93,8 +94,5 @@ const styles = StyleSheet.create({
   },
   iconFocused: {
     transform: [{ scale: 1.1 }],
-  },
-  icon: {
-    fontSize: 20,
   },
 });
